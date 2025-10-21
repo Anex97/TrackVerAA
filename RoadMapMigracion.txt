@@ -1,0 +1,44 @@
+🚀 Roadmap de Migración a Web
+🔹 Fase 1: Arranque Web
+- Crear la branch feature/web-migration.
+- Configurar Spring Boot en tu pom.xml.
+- Crear la clase principal TrackVerApplication.
+- Implementar un controlador simple (ReporteController) que devuelva un reporte en HTML.
+- Crear la primera plantilla Thymeleaf (reporte.html).
+- Ejecutar con mvn spring-boot:run y validar en http://localhost:8080/reporte.
+👉 Objetivo: ver un reporte preliminar en el navegador.
+
+🔹 Fase 2: Formularios Web
+- Crear un formulario HTML para iniciar sesión (/login).
+- Validar credenciales con tu clase SistemaAutenticacion.
+- Crear un formulario para crear auditorías (/auditorias/nueva).
+- Al enviar el formulario, generar un ReportePreliminar y mostrarlo en una vista.
+👉 Objetivo: reemplazar el menú de consola por formularios web.
+
+🔹 Fase 3: Persistencia
+- Integrar Spring Data JPA con una base de datos (H2 en memoria para pruebas, MySQL/PostgreSQL para producción).
+- Crear entidades Usuario, Auditoria, ReportePreliminar.
+- Guardar auditorías y reportes en la base de datos.
+- Listar auditorías en una página /auditorias.
+👉 Objetivo: que los datos no se pierdan al reiniciar la app.
+
+🔹 Fase 4: Seguridad y Roles
+- Integrar Spring Security para manejar login real.
+- Definir roles: Administrador, Auditor.
+- Restringir acceso a ciertas páginas según el rol.
+- Ejemplo: solo un Administrador puede aprobar auditorías.
+👉 Objetivo: control de acceso y autenticación real.
+
+🔹 Fase 5: Mejora de UI
+- Usar Bootstrap para dar estilo a las páginas.
+- Crear un layout base (layout.html) con cabecera, menú y pie de página.
+- Mejorar la visualización de reportes con tablas y tarjetas.
+👉 Objetivo: interfaz más profesional y defendible.
+
+🔹 Fase 6: Extensiones opcionales
+- Exportar reportes a PDF (con iText o PDFBox).
+- Exponer una API REST (/api/reportes) para integraciones externas.
+- Desplegar en la nube (Heroku, Azure, AWS).
+👉 Objetivo: mostrar visión de escalabilidad y modernización.
+
+
