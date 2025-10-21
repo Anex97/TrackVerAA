@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Bienvenido a TrackVer Web</title>
+    <title>TrackVer Web</title>
     <meta charset="UTF-8">
+    <!-- Enlace a tu hoja de estilos -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-    <h1>Bienvenido a TrackVer Web</h1>
-    <p>Has migrado exitosamente tu aplicación a la web 🚀</p>
-    <p><a th:href="@{/reporte}">Ver reporte preliminar</a></p>
+    <header style="text-align: center; margin-bottom: 30px;">
+        <!-- Logo -->
+        <img th:src="@{/img/logo.jpg}" alt="Logo TrackVer" width="200">
+        <h1>Bienvenido a TrackVer Web 🚀</h1>
+        <p>Tu plataforma para gestionar auditorías y reportes</p>
+    </header>
+
+    <main style="text-align: center;">
+        <p><a th:href="@{/reporte}">📄 Ver reporte preliminar</a></p>
+        <p><a th:href="@{/auditorias/nueva}">➕ Crear nueva auditoría</a></p>
+    </main>
+
+    <footer style="text-align: center; margin-top: 40px; font-size: 0.9em; color: #555;">
+        <p>&copy; 2025 TrackVer - Todos los derechos reservados</p>
+    </footer>
 </body>
 </html>
