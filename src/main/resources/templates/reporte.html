@@ -1,14 +1,76 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Reporte Preliminar</title>
     <meta charset="UTF-8">
+    <title>Reporte Preliminar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f6f8;
+        }
+        .container {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .field {
+            margin-bottom: 12px;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+        .value {
+            margin-left: 8px;
+            color: #333;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 14px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .back-link:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
     <h2>Reporte Preliminar</h2>
-    <p><b>ID:</b> <span th:text="${reporte.id}"></span></p>
-    <p><b>Fecha:</b> <span th:text="${reporte.fecha}"></span></p>
-    <p><b>Autor:</b> <span th:text="${reporte.autor}"></span></p>
-    <p><b>Descripción:</b> <span th:text="${reporte.descripcion}"></span></p>
+
+    <div class="field">
+        <span class="label">ID:</span>
+        <span class="value" th:text="${reporte.id}"></span>
+    </div>
+
+    <div class="field">
+        <span class="label">Fecha:</span>
+        <span class="value" th:text="${reporte.fecha}"></span>
+    </div>
+
+    <div class="field">
+        <span class="label">Autor:</span>
+        <span class="value" th:text="${reporte.autor}"></span>
+    </div>
+
+    <div class="field">
+        <span class="label">Resumen:</span>
+        <span class="value" th:text="${reporte.resumen}"></span>
+    </div>
+
+    <a class="back-link" th:href="@{/}">⬅ Volver al inicio</a>
+</div>
 </body>
 </html>

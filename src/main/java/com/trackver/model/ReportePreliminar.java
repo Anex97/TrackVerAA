@@ -2,44 +2,54 @@ package com.trackver.model;
 
 import java.time.LocalDate;
 
+/**
+ * Clase que representa un reporte preliminar generado a partir de una auditoría.
+ */
 public class ReportePreliminar {
     private int id;
     private LocalDate fecha;
-    private String descripcion;
     private String autor;
+    private String resumen;
 
-    public ReportePreliminar(int id, LocalDate fecha, String descripcion, String autor) {
+    // Constructor con parámetros
+    public ReportePreliminar(int id, LocalDate fecha, String autor, String resumen) {
         this.id = id;
         this.fecha = fecha;
-        this.descripcion = descripcion;
         this.autor = autor;
+        this.resumen = resumen;
     }
 
-    // Getters y setters
+    // Getters y Setters
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LocalDate getFecha() {
         return fecha;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public String getAutor() {
         return autor;
     }
 
-    // Método para mostrar el reporte en consola
-    public void visualizar() {
-        System.out.println("===== REPORTE PRELIMINAR =====");
-        System.out.println("ID: " + id);
-        System.out.println("Fecha: " + fecha);
-        System.out.println("Autor: " + autor);
-        System.out.println("Descripción: " + descripcion);
-        System.out.println("==============================");
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public String getResumen() {
+        return resumen;
+    }
+
+    public void setResumen(String resumen) {
+        this.resumen = resumen;
     }
 
     @Override
@@ -47,8 +57,8 @@ public class ReportePreliminar {
         return "ReportePreliminar{" +
                 "id=" + id +
                 ", fecha=" + fecha +
-                ", descripcion='" + descripcion + '\'' +
                 ", autor='" + autor + '\'' +
+                ", resumen='" + resumen + '\'' +
                 '}';
     }
 }

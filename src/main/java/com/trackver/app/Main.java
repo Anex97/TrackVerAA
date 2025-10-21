@@ -61,8 +61,8 @@ public class Main {
                     if (usuarioActivo instanceof Administrador) {
                         ((Administrador) usuarioActivo).agregarAuditoria(a1);
                     }
-                    ReportePreliminar r = a1.generarReporte();
-                    r.visualizar();
+                    //ReportePreliminar r = a1.generarReporte();
+                    //r.visualizar();
                     break;
 
                 case "3":
