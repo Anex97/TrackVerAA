@@ -16,8 +16,13 @@ public class Main {
         InitDB.crearTablaUsuarios();
         InitDB.crearTablaAuditorias();
         InitDB.crearTablaPosiciones();
-        SeedDB.insertarUsuarios();
 
+        // 2) Insertar datos semilla
+        SeedDB.insertarUsuarios();
+        SeedDB.insertarAuditorias();
+        SeedDB.insertarPosiciones();
+
+        // 3) Menú principal
         boolean salir = false;
 
         while (!salir) {
