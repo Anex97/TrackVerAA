@@ -41,7 +41,7 @@ public class AuditoriaDAO {
             pstmt.executeUpdate();
             return true;
         } catch (Exception e) {
-            System.out.println("❌ Error creando auditoría: " + e.getMessage());
+            System.out.println("Error creando auditoría: " + e.getMessage());
             return false;
         }
     }
@@ -65,7 +65,7 @@ public class AuditoriaDAO {
                 ));
             }
         } catch (Exception e) {
-            System.out.println("❌ Error listando auditorías: " + e.getMessage());
+            System.out.println("Error listando auditorías: " + e.getMessage());
         }
         return lista;
     }
@@ -80,7 +80,7 @@ public class AuditoriaDAO {
             int filas = pstmt.executeUpdate();
             return filas > 0;
         } catch (Exception e) {
-            System.out.println("❌ Error validando auditoría: " + e.getMessage());
+            System.out.println("Error validando auditoría: " + e.getMessage());
             return false;
         }
     }
@@ -103,7 +103,7 @@ public class AuditoriaDAO {
                 ));
             }
         } catch (Exception e) {
-            System.out.println("❌ Error listando auditorías validadas: " + e.getMessage());
+            System.out.println("Error listando auditorías validadas: " + e.getMessage());
         }
         return lista;
     }

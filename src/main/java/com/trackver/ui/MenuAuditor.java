@@ -41,9 +41,9 @@ public class MenuAuditor {
         String descripcion = sc.nextLine();
 
         if (AuditoriaDAO.crearAuditoria(titulo, descripcion, usuario.id)) {
-            System.out.println("✅ Auditoría creada con éxito.");
+            System.out.println("Auditoría creada con éxito.");
         } else {
-            System.out.println("❌ No se pudo crear la auditoría.");
+            System.out.println("No se pudo crear la auditoría.");
         }
     }
 

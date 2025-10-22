@@ -18,7 +18,7 @@ public class InitDB {
             stmt.execute(sql);
             System.out.println("✅ Tabla 'usuarios' lista.");
         } catch (Exception e) {
-            System.out.println("❌ Error creando tabla: " + e.getMessage());
+            System.out.println("Error creando tabla: " + e.getMessage());
         }
     }
     public static void crearTablaAuditorias() {
@@ -35,7 +35,23 @@ public class InitDB {
             Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-        System.out.println("❌ Error creando tabla auditorias: " + e.getMessage());
+        System.out.println("Error creando tabla auditorias: " + e.getMessage());
+        }
+    }
+    public static void crearTablaPosiciones(){
+        String sql = "CREATE TABLE IF NOT EXISTS posiciones (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "latitud REAL NOT NULL," +
+                     "longitud REAL NOT NULL," +
+                     "fechaHora TEXT NOT NULL," +
+                     "usuario_id INTEGER," +
+                     "FOREIGN KEY(usuario_id) REFERENCES usuarios(id)" +
+                     ");";
+        try (Connection conn = ConexionSQLite.conectar();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println("Error creando tabla posiciones: " + e.getMessage());
         }
     }
 }

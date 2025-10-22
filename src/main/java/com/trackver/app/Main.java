@@ -15,6 +15,7 @@ public class Main {
         // 1) Inicializar BD y usuarios iniciales
         InitDB.crearTablaUsuarios();
         InitDB.crearTablaAuditorias();
+        InitDB.crearTablaPosiciones();
         SeedDB.insertarUsuarios();
 
         boolean salir = false;
@@ -37,13 +38,13 @@ public class Main {
                     UsuarioDTO usuarioActivo = UsuarioDAO.buscarPorCorreoYPass(correo, contrasena);
 
                     if (usuarioActivo != null) {
-                        System.out.println("✅ Bienvenido " + usuarioActivo.nombre +
+                        System.out.println("Bienvenido " + usuarioActivo.nombre +
                                 " | Rol: " + rolTexto(usuarioActivo.nivelAcceso));
 
                         // Delegar al MenuManager
                         MenuManager.mostrarMenuPorRol(sc, usuarioActivo);
                     } else {
-                        System.out.println("❌ Credenciales incorrectas.");
+                        System.out.println("Credenciales incorrectas.");
                     }
                     break;
                 }

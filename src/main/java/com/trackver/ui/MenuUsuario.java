@@ -1,6 +1,6 @@
 package com.trackver.ui;
 
-import com.trackver.db.AuditoriaDAO;
+import com.trackver.db.PosicionDAO;
 import com.trackver.db.UsuarioDAO.UsuarioDTO;
 import java.util.Scanner;
 
@@ -10,18 +10,18 @@ public class MenuUsuario {
         boolean salir = false;
         while (!salir) {
             System.out.println("\n=== MENÚ USUARIO ===");
-            System.out.println("1. Consultar auditorías validadas");
-            System.out.println("2. Ver reportes (en construcción)");
+            System.out.println("1. Registrar nueva posición GPS");
+            System.out.println("2. Consultar mis posiciones");
             System.out.println("0. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
             String opcion = sc.nextLine();
 
             switch (opcion) {
                 case "1":
-                    consultarAuditoriasValidadas();
+                    registrarPosicion(sc, usuario);
                     break;
                 case "2":
-                    System.out.println("Funcionalidad de reportes en construcción...");
+                    consultarPosiciones(usuario);
                     break;
                 case "0":
                     salir = true;
@@ -32,17 +32,30 @@ public class MenuUsuario {
         }
     }
 
-    private static void consultarAuditoriasValidadas() {
-        var auditorias = AuditoriaDAO.listarValidadas();
-        if (auditorias.isEmpty()) {
-            System.out.println("No hay auditorías validadas disponibles.");
-        } else {
-            System.out.println("\n--- AUDITORÍAS VALIDADAS ---");
-            for (var a : auditorias) {
-                System.out.println("ID: " + a.id + " | " + a.titulo +
-                                   " | Fecha: " + a.fecha +
-                                   " | Estado: " + a.estado);
+    private static void registrarPosicion(Scanner sc, UsuarioDTO usuario) {
+        try {
+            System.out.print("Ingrese latitud: ");
+            double latitud = Double.parseDouble(sc.nextLine());
+            System.out.print("Ingrese longitud: ");
+            double longitud = Double.parseDouble(sc.nextLine());
+
+            if (PosicionDAO.registrarPosicion(latitud, longitud, usuario.id)) {
+                System.out.println("Posición registrada con éxito.");
+            } else {
+                System.out.println("No se pudo registrar la posición.");
             }
+        } catch (NumberFormatException e) {
+            System.out.println("Coordenadas inválidas.");
+        }
+    }
+
+    private static void consultarPosiciones(UsuarioDTO usuario) {
+        var posiciones = PosicionDAO.listarPosicionesPorUsuario(usuario.id);
+        if (posiciones.isEmpty()) {
+            System.out.println("No tienes posiciones registradas.");
+        } else {
+            System.out.println("\n--- HISTORIAL DE POSICIONES ---");
+            posiciones.forEach(System.out::println);
         }
     }
 }
