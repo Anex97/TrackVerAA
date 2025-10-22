@@ -14,6 +14,7 @@ public class Main {
 
         // 1) Inicializar BD y usuarios iniciales
         InitDB.crearTablaUsuarios();
+        InitDB.crearTablaAuditorias();
         SeedDB.insertarUsuarios();
 
         boolean salir = false;

@@ -1,5 +1,6 @@
 package com.trackver.ui;
 
+import com.trackver.db.AuditoriaDAO;
 import com.trackver.db.UsuarioDAO.UsuarioDTO;
 import java.util.Scanner;
 
@@ -17,12 +18,11 @@ public class MenuAuditor {
 
             switch (opcion) {
                 case "1":
-                    System.out.println("Creando auditoría...");
-                    // Aquí conectarías con AuditoriaDAO.crearAuditoria()
+                    crearAuditoria(sc, usuario);
                     break;
                 case "2":
                     System.out.println("Generando reporte preliminar...");
-                    // Aquí conectarías con AuditoriaDAO.generarReporte()
+                    // Aquí luego conectaremos con AuditoriaDAO.listarAuditorias()
                     break;
                 case "0":
                     salir = true;
@@ -30,6 +30,19 @@ public class MenuAuditor {
                 default:
                     System.out.println("Opción inválida.");
             }
+        }
+    }
+
+    private static void crearAuditoria(Scanner sc, UsuarioDTO usuario) {
+        System.out.print("Título de la auditoría: ");
+        String titulo = sc.nextLine();
+        System.out.print("Descripción: ");
+        String descripcion = sc.nextLine();
+
+        if (AuditoriaDAO.crearAuditoria(titulo, descripcion, usuario.id)) {
+            System.out.println("✅ Auditoría creada con éxito.");
+        } else {
+            System.out.println("❌ No se pudo crear la auditoría.");
         }
     }
 }
