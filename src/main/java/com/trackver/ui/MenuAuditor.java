@@ -22,7 +22,7 @@ public class MenuAuditor {
                     break;
                 case "2":
                     System.out.println("Generando reporte preliminar...");
-                    // Aquí luego conectaremos con AuditoriaDAO.listarAuditorias()
+                    generarReportePreliminar();
                     break;
                 case "0":
                     salir = true;
@@ -33,6 +33,7 @@ public class MenuAuditor {
         }
     }
 
+    // Método para crear una auditoría
     private static void crearAuditoria(Scanner sc, UsuarioDTO usuario) {
         System.out.print("Título de la auditoría: ");
         String titulo = sc.nextLine();
@@ -45,4 +46,18 @@ public class MenuAuditor {
             System.out.println("❌ No se pudo crear la auditoría.");
         }
     }
+
+    //Metodo para generar reporte preliminar
+    private static void generarReportePreliminar() {
+        var auditorias = com.trackver.db.AuditoriaDAO.listarAuditorias();
+        if (auditorias.isEmpty()) {
+         System.out.println("No hay auditorías registradas.");
+        }  
+        else {
+            System.out.println("\n--- REPORTE PRELIMINAR ---");
+            for (var a : auditorias) {
+            System.out.println("ID: " + a.id + " | " + a.titulo + " | Estado: " + a.estado + " | Fecha: " + a.fecha);
+            }
+        }
+    }  
 }

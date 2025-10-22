@@ -20,9 +20,11 @@ public class MenuAdmin {
             switch (opcion) {
                 case "1":
                     System.out.println("Validando auditoría...");
+                    validarAuditoria(sc);
                     break;
                 case "2":
                     System.out.println("Listando auditorías...");
+                    listarAuditorias(sc);
                     break;
                 case "3":
                     gestionUsuarios(sc);
@@ -82,6 +84,28 @@ public class MenuAdmin {
                 default:
                     System.out.println("Opción inválida.");
             }
+        }
+    }
+    private static void listarAuditorias(Scanner sc) {
+        var auditorias = com.trackver.db.AuditoriaDAO.listarAuditorias();
+        if (auditorias.isEmpty()) {
+            System.out.println("No hay auditorías registradas.");
+        } else {
+            System.out.println("\n--- LISTADO DE AUDITORÍAS ---");
+            for (var a : auditorias) {
+                System.out.println("ID: " + a.id + " | " + a.titulo + " | Estado: " + a.estado + " | Fecha: " + a.fecha);
+            }
+        }
+    }
+
+    private static void validarAuditoria(Scanner sc) {
+        listarAuditorias(sc);
+        System.out.print("Ingrese el ID de la auditoría a validar: ");
+        int id = Integer.parseInt(sc.nextLine());
+        if (com.trackver.db.AuditoriaDAO.validarAuditoria(id)) {
+            System.out.println("✅ Auditoría validada con éxito.");
+        } else {
+            System.out.println("❌ No se pudo validar la auditoría.");
         }
     }
 }
