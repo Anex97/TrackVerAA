@@ -1,0 +1,54 @@
+-- Elimina tablas si ya existen (para reiniciar el esquema en desarrollo)
+DROP TABLE IF EXISTS posiciones;
+DROP TABLE IF EXISTS auditorias;
+DROP TABLE IF EXISTS usuarios;
+
+-- =========================
+-- Tabla de usuarios
+-- =========================
+CREATE TABLE usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    correo TEXT UNIQUE NOT NULL,
+    contrasena TEXT NOT NULL,
+    nivelAcceso INTEGER NOT NULL -- 0=Usuario, 1=Auditor, 2=Admin
+);
+
+-- Usuarios iniciales
+INSERT INTO usuarios (nombre, correo, contrasena, nivelAcceso) VALUES
+('Admin', 'admin@trackver.com', '1234', 2),
+('Auditor', 'auditor@trackver.com', '1234', 1),
+('Usuario', 'usuario@trackver.com', '1234', 0);
+
+-- =========================
+-- Tabla de auditorías
+-- =========================
+CREATE TABLE auditorias (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
+    descripcion TEXT,
+    fecha TEXT NOT NULL,
+    estado TEXT NOT NULL,
+    usuario_id INTEGER,
+    FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
+);
+
+-- Auditoría de ejemplo
+INSERT INTO auditorias (titulo, descripcion, fecha, estado, usuario_id) VALUES
+('Auditoría inicial', 'Revisión de sistema base', date('now'), 'Pendiente', 2);
+
+-- =========================
+-- Tabla de posiciones GPS
+-- =========================
+CREATE TABLE posiciones (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    latitud REAL NOT NULL,
+    longitud REAL NOT NULL,
+    fechaHora TEXT NOT NULL,
+    usuario_id INTEGER,
+    FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
+);
+
+-- Posición de ejemplo
+INSERT INTO posiciones (latitud, longitud, fechaHora, usuario_id) VALUES
+(25.6866, -100.3161, datetime('now'), 3);
