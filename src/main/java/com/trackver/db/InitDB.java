@@ -18,9 +18,9 @@ public class InitDB {
         try (Connection conn = ConexionSQLite.conectarUsuarios();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("✅ Tabla 'usuarios' lista en usuarios.db");
+            System.out.println("Tabla 'usuarios' lista en usuarios.db");
         } catch (Exception e) {
-            System.out.println("❌ Error creando tabla usuarios: " + e.getMessage());
+            System.out.println("Error creando tabla usuarios: " + e.getMessage());
         }
     }
 
@@ -38,9 +38,9 @@ public class InitDB {
         try (Connection conn = ConexionSQLite.conectarAuditorias();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("✅ Tabla 'auditorias' lista en auditorias.db");
+            System.out.println("Tabla 'auditorias' lista en auditorias.db");
         } catch (Exception e) {
-            System.out.println("❌ Error creando tabla auditorias: " + e.getMessage());
+            System.out.println("Error creando tabla auditorias: " + e.getMessage());
         }
     }
 
@@ -57,9 +57,9 @@ public class InitDB {
         try (Connection conn = ConexionSQLite.conectarPosiciones();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("✅ Tabla 'posiciones' lista en posiciones.db");
+            System.out.println("Tabla 'posiciones' lista en posiciones.db");
         } catch (Exception e) {
-            System.out.println("❌ Error creando tabla posiciones: " + e.getMessage());
+            System.out.println("Error creando tabla posiciones: " + e.getMessage());
         }
     }
 }

@@ -30,7 +30,7 @@ public class MenuUsuario {
                     salir = true;
                     break;
                 default:
-                    System.out.println("❌ Opción inválida.");
+                    System.out.println("Opción inválida.");
             }
         }
     }
@@ -42,12 +42,12 @@ public class MenuUsuario {
             System.out.print("Longitud: ");
             double lon = Double.parseDouble(sc.nextLine());
             if (PosicionDAO.registrarPosicion(lat, lon, usuarioId)) {
-                System.out.println("✅ Posición registrada.");
+                System.out.println("Posición registrada.");
             } else {
-                System.out.println("❌ No se pudo registrar la posición.");
+                System.out.println("No se pudo registrar la posición.");
             }
         } catch (NumberFormatException e) {
-            System.out.println("❌ Coordenadas inválidas.");
+            System.out.println("Coordenadas inválidas.");
         }
     }
 

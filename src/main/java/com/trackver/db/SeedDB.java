@@ -34,10 +34,10 @@ public class SeedDB {
             pstmt.setInt(4, 0);
             pstmt.executeUpdate();
 
-            System.out.println("✅ Usuarios iniciales insertados en usuarios.db");
+            System.out.println("Usuarios iniciales insertados en usuarios.db");
 
         } catch (Exception e) {
-            System.out.println("❌ Error insertando usuarios iniciales: " + e.getMessage());
+            System.out.println("Error insertando usuarios iniciales: " + e.getMessage());
         }
     }
 
@@ -61,10 +61,10 @@ public class SeedDB {
             pstmt.setInt(4, 2);
             pstmt.executeUpdate();
 
-            System.out.println("✅ Auditorías iniciales insertadas en auditorias.db");
+            System.out.println("Auditorías iniciales insertadas en auditorias.db");
 
         } catch (Exception e) {
-            System.out.println("❌ Error insertando auditorías iniciales: " + e.getMessage());
+            System.out.println("Error insertando auditorías iniciales: " + e.getMessage());
         }
     }
 
@@ -86,10 +86,10 @@ public class SeedDB {
             pstmt.setInt(3, 3);
             pstmt.executeUpdate();
 
-            System.out.println("✅ Posiciones iniciales insertadas en posiciones.db");
+            System.out.println("Posiciones iniciales insertadas en posiciones.db");
 
         } catch (Exception e) {
-            System.out.println("❌ Error insertando posiciones iniciales: " + e.getMessage());
+            System.out.println("Error insertando posiciones iniciales: " + e.getMessage());
         }
     }
 }

@@ -36,7 +36,7 @@ public class PosicionDAO {
             pstmt.executeUpdate();
             return true;
         } catch (Exception e) {
-            System.out.println("❌ Error registrando posición: " + e.getMessage());
+            System.out.println("Error registrando posición: " + e.getMessage());
             return false;
         }
     }
@@ -59,7 +59,7 @@ public class PosicionDAO {
                 ));
             }
         } catch (Exception e) {
-            System.out.println("❌ Error listando posiciones: " + e.getMessage());
+            System.out.println("Error listando posiciones: " + e.getMessage());
         }
         return lista;
     }
@@ -81,7 +81,7 @@ public class PosicionDAO {
                 ));
             }
         } catch (Exception e) {
-            System.out.println("❌ Error listando todas las posiciones: " + e.getMessage());
+            System.out.println("Error listando todas las posiciones: " + e.getMessage());
         }
         return lista;
     }

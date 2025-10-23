@@ -35,7 +35,7 @@ public class UsuarioDAO {
             pstmt.executeUpdate();
             return true;
         } catch (Exception e) {
-            System.out.println("❌ Error creando usuario: " + e.getMessage());
+            System.out.println("Error creando usuario: " + e.getMessage());
             return false;
         }
     }
@@ -57,7 +57,7 @@ public class UsuarioDAO {
                 );
             }
         } catch (Exception e) {
-            System.out.println("❌ Error en login: " + e.getMessage());
+            System.out.println("Error en login: " + e.getMessage());
         }
         return null;
     }
@@ -78,7 +78,7 @@ public class UsuarioDAO {
                 ));
             }
         } catch (Exception e) {
-            System.out.println("❌ Error listando usuarios: " + e.getMessage());
+            System.out.println("Error listando usuarios: " + e.getMessage());
         }
         return lista;
     }
@@ -92,7 +92,7 @@ public class UsuarioDAO {
             int filas = pstmt.executeUpdate();
             return filas > 0;
         } catch (Exception e) {
-            System.out.println("❌ Error eliminando usuario: " + e.getMessage());
+            System.out.println("Error eliminando usuario: " + e.getMessage());
             return false;
         }
     }

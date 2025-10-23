@@ -34,7 +34,7 @@ public class MenuAuditor {
                     salir = true;
                     break;
                 default:
-                    System.out.println("❌ Opción inválida.");
+                    System.out.println("Opción inválida.");
             }
         }
     }
@@ -45,9 +45,9 @@ public class MenuAuditor {
         System.out.print("Descripción: ");
         String descripcion = sc.nextLine();
         if (AuditoriaDAO.crearAuditoria(titulo, descripcion, usuarioId)) {
-            System.out.println("✅ Auditoría creada.");
+            System.out.println("Auditoría creada.");
         } else {
-            System.out.println("❌ No se pudo crear la auditoría.");
+            System.out.println("No se pudo crear la auditoría.");
         }
     }
 

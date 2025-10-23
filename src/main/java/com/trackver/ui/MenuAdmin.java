@@ -49,7 +49,7 @@ public class MenuAdmin {
                     salir = true;
                     break;
                 default:
-                    System.out.println("❌ Opción inválida.");
+                    System.out.println("Opción inválida.");
             }
         }
     }
@@ -80,9 +80,9 @@ public class MenuAdmin {
         int nivel = Integer.parseInt(sc.nextLine());
 
         if (UsuarioDAO.crearUsuario(nombre, correo, contrasena, nivel)) {
-            System.out.println("✅ Usuario creado con éxito.");
+            System.out.println("Usuario creado con éxito.");
         } else {
-            System.out.println("❌ No se pudo crear el usuario.");
+            System.out.println("No se pudo crear el usuario.");
         }
     }
 
@@ -91,9 +91,9 @@ public class MenuAdmin {
         System.out.print("Ingrese el ID del usuario a eliminar: ");
         int id = Integer.parseInt(sc.nextLine());
         if (UsuarioDAO.eliminarUsuario(id)) {
-            System.out.println("✅ Usuario eliminado.");
+            System.out.println("Usuario eliminado.");
         } else {
-            System.out.println("❌ No se pudo eliminar el usuario.");
+            System.out.println("No se pudo eliminar el usuario.");
         }
     }
 
@@ -117,9 +117,9 @@ public class MenuAdmin {
         System.out.print("Ingrese el ID de la auditoría a validar: ");
         int id = Integer.parseInt(sc.nextLine());
         if (AuditoriaDAO.validarAuditoria(id)) {
-            System.out.println("✅ Auditoría validada con éxito.");
+            System.out.println("Auditoría validada con éxito.");
         } else {
-            System.out.println("❌ No se pudo validar la auditoría.");
+            System.out.println("No se pudo validar la auditoría.");
         }
     }
 
