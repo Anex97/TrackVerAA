@@ -14,6 +14,9 @@ Requisitos
 - **Maven:** Apache Maven instalado en PATH.
 - **Sistema operativo:** Probado como aplicación local en Windows; debería ejecutarse en cualquier plataforma con Java 17.
 
+Ejecución Simple de la aplicación
+- Ejecutar el archivo TrackverA&A.exe
+
 Instalación y ejecución (Windows PowerShell)
 - Clonar el repositorio:
 ```
