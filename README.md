@@ -17,6 +17,10 @@ Requisitos
 Ejecución Simple de la aplicación
 - Ejecutar el archivo TrackverA&A.exe
 
+Ejecucion desde Visual Basic usando Java
+- Compilar y Empaquetar
+- Ejecutar la applicacion con el comando que se encuentra debajo o darle Run al Main.java
+
 Instalación y ejecución (Windows PowerShell)
 - Clonar el repositorio:
 ```
@@ -61,15 +65,3 @@ Resumen de clases clave
 - `com.trackver.db.ConexionSQLite`: conexiones JDBC a archivos SQLite.
 - `com.trackver.db.SeedDB`: inserta datos de ejemplo al inicio.
 - `com.trackver.ui.MenuManager`: delega menús según el rol del usuario.
-
-Cómo contribuir
-- Abrir un issue para discutir cambios o mejoras.
-- Hacer un fork, crear una rama con la tarea (`feature/descripcion` o `fix/descripcion`), y enviar PR contra `main`.
-
-Notas y recomendaciones
-- Las contraseñas en los datos semilla son de ejemplo (`1234`) y NO deben usarse en producción.
-- Para migrar a un entorno web o servidor centralizado, considerar consolidar la persistencia en un único RDBMS en servidor y exponer una API.
-
-Contacto
-- Repositorio: `https://github.com/Anex97/TrackVerAA`
-----
