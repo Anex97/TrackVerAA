@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Sección del encabezado con logo, título y navegación -->
   <header>
     <div class="header-container">
       <!-- Logo alineado a la izquierda -->
@@ -28,54 +29,57 @@
       </ul>
     </nav>
   </header>
+  <!-- Área de contenido principal -->
   <main>
-  <section class="panel">
-    <h2>Bienvenido, Ulises</h2>
-    <p>Tu flota está lista para ser monitoreada</p>
+    <!-- Sección del panel principal -->
+    <section class="panel">
+      <h2>Bienvenido, Ulises</h2>
+      <p>Tu flota está lista para ser monitoreada</p>
 
-    <!-- Tarjetas resumen -->
-    <div class="dashboard">
-      <div class="card">
-        <h3>Vehículos</h3>
-        <p>12 registrados</p>
+      <!-- Tarjetas de resumen del dashboard -->
+      <div class="dashboard">
+        <div class="card">
+          <h3>Vehículos</h3>
+          <p>12 registrados</p>
+        </div>
+        <div class="card">
+          <h3>Última posición</h3>
+          <p>Monterrey, NL</p>
+        </div>
+        <div class="card">
+          <h3>Registros</h3>
+          <p>245 en total</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Última posición</h3>
-        <p>Monterrey, NL</p>
-      </div>
-      <div class="card">
-        <h3>Registros</h3>
-        <p>245 en total</p>
-      </div>
-    </div>
 
-    <!-- Accesos rápidos -->
-    <div class="acciones">
-      <button onclick="location.href='vehiculo.html'">Agregar Vehiculo</button>
-      <button onclick="location.href='registro.html'">Registrar GPS</button>
-      <button onclick="location.href='consulta.html'">Consultar Registros</button>
-      <button>Configuración</button>
-    </div>
-  </section>
-  <section class="alertas">
-    <h2>Alertas recientes</h2>
-    <ul class="alerta-lista">
-      <li>
-        <strong>Vehículo:</strong> Volvo TR 430 — 
-        <span>Exceso de velocidad detectado</span> 
-        <em>(14/12/2025 11:45)</em>
-      </li>
-      <li>
-        <strong>Vehículo:</strong> Volvo TR 500 — 
-        <span>Entrada a zona restringida</span> 
-        <em>(14/12/2025 10:30)</em>
-      </li>
-    </ul>
-    <button onclick="location.href='alertas.html'">Ver todas las Alertas</button>
-  </section>
+      <!-- Accesos rápidos -->
+      <div class="acciones">
+        <button onclick="location.href='vehiculo.html'">Agregar Vehiculo</button>
+        <button onclick="location.href='registro.html'">Registrar GPS</button>
+        <button onclick="location.href='consulta.html'">Consultar Registros</button>
+      </div>
+    </section>
+    <!-- Sección de alertas recientes -->
+    <section class="alertas">
+      <h2>Alertas recientes</h2>
+      <ul class="alerta-lista">
+        <li>
+          <strong>Vehículo:</strong> Volvo TR 430 — 
+          <span>Exceso de velocidad detectado</span> 
+          <em>(14/12/2025 11:45)</em>
+        </li>
+        <li>
+          <strong>Vehículo:</strong> Volvo TR 500 — 
+          <span>Entrada a zona restringida</span> 
+          <em>(14/12/2025 10:30)</em>
+        </li>
+      </ul>
+      <button onclick="location.href='alertas.html'">Ver todas las Alertas</button>
+    </section>
+  </main>
+  <!-- Sección del pie de página -->
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>
-</main>
 </body>
 </html>
