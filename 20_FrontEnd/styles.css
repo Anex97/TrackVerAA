@@ -1,0 +1,384 @@
+/* ==============================
+   Fuentes y estilos base
+   ============================== */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@400;700&display=swap');
+
+:root {
+  --color-primario: #004080;
+  --color-secundario: #0055aa;
+  --color-alerta: #cc0000;
+  --color-fondo: #f4f4f9;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background-color: var(--color-fondo);
+  color: #333;
+}
+
+/* ==============================
+   Header y navegación
+   ============================== */
+header {
+  background-color: var(--color-primario);
+  color: white;
+  padding: 15px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+  border-radius: 50px;
+}
+
+.titulo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 2rem;
+  font-family: 'Merriweather', serif;
+  text-align: center;
+}
+
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px;
+  background-color: #003366;
+  border-radius: 25px;
+  margin-top: 10px;
+}
+
+.nav-menu li {
+  list-style: none;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.nav-menu a:hover {
+  background-color: var(--color-secundario);
+}
+
+/* ==============================
+   Sección de consulta y tablas
+   ============================== */
+.consulta {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filtros input, .filtros button {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.filtros button {
+  background-color: var(--color-primario);
+  color: white;
+  cursor: pointer;
+}
+
+.filtros button:hover {
+  background-color: var(--color-secundario);
+}
+
+.consulta-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.consulta-tabla th, .consulta-tabla td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.consulta-tabla th {
+  background-color: var(--color-primario);
+  color: white;
+}
+
+.consulta-tabla tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* ==============================
+   Registro (formulario + preview)
+   ============================== */
+.registro-contenedor {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+.preview, .registro-form {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.preview h3 {
+  margin-bottom: 15px;
+  color: var(--color-primario);
+}
+
+.registro-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.registro-form input, .registro-form textarea {
+  width: 95%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.registro-form button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: var(--color-primario);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.registro-form button:hover {
+  background-color: var(--color-secundario);
+}
+
+/* ==============================
+   Panel principal (dashboard)
+   ============================== */
+.panel {
+  max-width: 1000px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.dashboard {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.card {
+  flex: 1;
+  min-width: 200px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  color: var(--color-primario);
+}
+
+.card.alerta {
+  background-color: #ffe5e5;
+  border: 1px solid var(--color-alerta);
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.acciones button {
+  padding: 12px 20px;
+  background-color: var(--color-primario);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.acciones button:hover {
+  background-color: var(--color-secundario);
+}
+
+/* ==============================
+   Alertas
+   ============================== */
+.alertas {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #fff5f5;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--color-alerta);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.alertas h2 {
+  color: var(--color-alerta);
+  margin-bottom: 15px;
+}
+
+.alerta-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.alerta-lista li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.alerta-lista strong {
+  color: var(--color-primario);
+}
+
+.alertas button {
+  margin-top: 0px;
+  padding: 10px 20px;
+  background-color: var(--color-alerta);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.alertas button:hover {
+  background-color: #990000;
+}
+
+/* ==============================
+   Login
+   ============================== */
+.login-contenedor {
+  max-width: 400px;
+  margin: 80px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.login-contenedor h2 {
+  margin-bottom: 20px;
+  color: var(--color-primario);
+}
+
+.login-form label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.login-form input {
+  width: 95%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.login-form button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background-color: var(--color-primario);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.login-form button:hover {
+  background-color: var(--color-secundario);
+}
+
+.login-extra {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.login-extra a {
+  color: var(--color-primario);
+  text-decoration: none;
+}
+
+.login-extra a:hover {
+  text-decoration: underline;
+}
+
+/* ==============================
+   Responsive design
+   ============================== */
+@media (max-width: 768px) {
+  .registro-contenedor, .dashboard {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .acciones {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-menu {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .titulo {
+    font-size: 1.5rem;
+  }
+}
+
+.footer {
+  background-color: #003366;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 40px;
+  border-top: 3px solid #004080;
+  font-size: 0.9rem;
+}

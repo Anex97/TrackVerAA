@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TrackVer A&A - Consulta de Registros</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header estándar -->
+  <header>
+    <div class="header-container">
+      <!-- Logo alineado a la izquierda -->
+      <div class="logo-container">
+        <img src="img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+      </div>
+      <!-- Título centrado -->
+      <h1 class="titulo">TrackVer A&A</h1>
+    </div>
+
+    <!-- Menú de navegación -->
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="panel.html">Panel Principal</a></li>
+        <li><a href="registro.html">Registrar GPS</a></li>
+        <li><a href="consulta.html">Consultar Registros</a></li>
+        <li><a href="alertas.html">Alertas</a></li>
+        <li><a href="index.html">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Contenido principal -->
+  <main>
+    <section class="consulta">
+      <h2>Consulta de Registros GPS</h2>
+
+      <!-- Controles de filtrado -->
+      <div class="filtros">
+        <input type="text" placeholder="Buscar por vehículo">
+        <input type="text" placeholder="Buscar por descripción">
+        <input type="date" name="fechaInicio">
+        <input type="date" name="fechaFin">
+        <button type="button">Filtrar</button>
+        <button type="button">Mostrar todos</button>
+      </div>
+
+      <!-- Tabla de registros -->
+      <table class="consulta-tabla">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Vehículo</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Ejemplo de datos estáticos -->
+          <tr>
+            <td>1</td>
+            <td>Volvo TR 430</td>
+            <td>25.6866</td>
+            <td>-100.3161</td>
+            <td>Punto de prueba</td>
+            <td>14/12/2025</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Volvo TR 500</td>
+            <td>19.4326</td>
+            <td>-99.1332</td>
+            <td>Centro histórico</td>
+            <td>14/12/2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

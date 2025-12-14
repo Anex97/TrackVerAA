@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TrackVer A&A - Panel Principal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <!-- Logo alineado a la izquierda -->
+      <div class="logo-container">
+        <img src="img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+      </div>
+
+      <!-- Título centrado -->
+      <h1 class="titulo">TrackVer A&A</h1>
+    </div>
+
+    <!-- Menú de navegación -->
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="panel.html">Panel Principal</a></li>
+        <li><a href="registro.html">Registrar GPS</a></li>
+        <li><a href="consulta.html">Consultar Registros</a></li>
+        <li><a href="alertas.html">Alertas</a></li>
+        <li><a href="index.html">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+  <section class="panel">
+    <h2>Bienvenido, Ulises</h2>
+    <p>Tu flota está lista para ser monitoreada</p>
+
+    <!-- Tarjetas resumen -->
+    <div class="dashboard">
+      <div class="card">
+        <h3>Vehículos</h3>
+        <p>12 registrados</p>
+      </div>
+      <div class="card">
+        <h3>Última posición</h3>
+        <p>Monterrey, NL</p>
+      </div>
+      <div class="card">
+        <h3>Registros</h3>
+        <p>245 en total</p>
+      </div>
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div class="acciones">
+      <button onclick="location.href='vehiculo.html'">Agregar Vehiculo</button>
+      <button onclick="location.href='registro.html'">Registrar GPS</button>
+      <button onclick="location.href='consulta.html'">Consultar Registros</button>
+      <button>Configuración</button>
+    </div>
+  </section>
+  <section class="alertas">
+    <h2>Alertas recientes</h2>
+    <ul class="alerta-lista">
+      <li>
+        <strong>Vehículo:</strong> Volvo TR 430 — 
+        <span>Exceso de velocidad detectado</span> 
+        <em>(14/12/2025 11:45)</em>
+      </li>
+      <li>
+        <strong>Vehículo:</strong> Volvo TR 500 — 
+        <span>Entrada a zona restringida</span> 
+        <em>(14/12/2025 10:30)</em>
+      </li>
+    </ul>
+    <button onclick="location.href='alertas.html'">Ver todas las Alertas</button>
+  </section>
+  <footer class="footer">
+    <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
+  </footer>
+</main>
+</body>
+</html>
