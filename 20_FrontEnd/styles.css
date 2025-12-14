@@ -412,17 +412,3 @@ header {
   font-size: 0.9rem;
   margin-top: 40px;
 }
-
-/* Asegura que el footer quede al fondo en páginas con poco contenido */
-html, body {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1;
-}
