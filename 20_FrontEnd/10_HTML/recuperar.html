@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>TrackVer A&A - Recuperar Contraseña</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
   <!-- Sección del encabezado con logo y título -->
   <header>
     <div class="header-container">
       <div class="logo-container">
-        <img src="img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+        <img src="../20_FrontEnd/img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
       </div>
       <h1 class="titulo">TrackVer A&A</h1>
     </div>
@@ -22,7 +22,7 @@
     <section class="login-contenedor">
       <h2>Recuperar Contraseña</h2>
       <!-- Formulario de recuperación -->
-      <form class="login-form">
+      <form class="login-form" id="recuperarForm">
         <label for="correo">Correo electrónico:</label>
         <input type="email" id="correo" placeholder="Ingresa tu correo" required>
 
@@ -36,5 +36,7 @@
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>
+
+  <script src="../20_JavaScript/recuperar.js"></script>
 </body>
 </html>

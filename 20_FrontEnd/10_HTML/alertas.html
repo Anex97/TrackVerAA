@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TrackVer A&A - Alertas</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <!-- Sección del encabezado con logo, título y navegación -->
+  <header>
+    <div class="header-container">
+      <!-- Logo alineado a la izquierda -->
+      <div class="logo-container">
+        <img src="../img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+      </div>
+      <!-- Título centrado -->
+      <h1 class="titulo">TrackVer A&A</h1>
+    </div>
+
+    <!-- Menú de navegación -->
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="Panel.html">Panel Principal</a></li>
+        <li><a href="Registro.html">Registrar GPS</a></li>
+        <li><a href="Consulta.html">Consultar Registros</a></li>
+        <li><a href="alertas.html">Alertas</a></li>
+        <li><a href="Index.html">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Área de contenido principal -->
+  <main>
+    <!-- Sección de historial de alertas -->
+    <section class="alertas">
+      <h2>Historial de Alertas</h2>
+
+      <!-- Controles de filtrado -->
+      <div class="filtros">
+        <input type="text" id="filtroVehiculo" placeholder="Buscar por vehículo">
+        <input type="text" id="filtroTipo" placeholder="Buscar por tipo de alerta">
+        <input type="date" id="fechaInicio">
+        <input type="date" id="fechaFin">
+        <button type="button" onclick="filtrarAlertas()">Filtrar</button>
+        <button type="button" onclick="mostrarTodas()">Mostrar todas</button>
+      </div>
+
+      <!-- Tabla de alertas -->
+      <table class="consulta-tabla">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Vehículo</th>
+            <th>Tipo de Alerta</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Ejemplo de datos estáticos -->
+          <tr>
+            <td>1</td>
+            <td>Volvo TR 430</td>
+            <td>Velocidad</td>
+            <td>Exceso de velocidad detectado</td>
+            <td>14/12/2025 11:45</td>
+            <td>Pendiente</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Volvo TR 500</td>
+            <td>Zona restringida</td>
+            <td>Entrada a zona no autorizada</td>
+            <td>14/12/2025 10:30</td>
+            <td>Atendida</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+  <!-- Sección del pie de página -->
+  <footer class="footer">
+    <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../20_JavaScript/alertas.js"></script>
+</body>
+</html>

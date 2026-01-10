@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TrackVer A&A - Registro GPS</title>
+  <link rel="stylesheet" href="../styles.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <!-- Sección del encabezado con logo, título y navegación -->
+  <header>
+    <div class="header-container">
+      <!-- Logo alineado a la izquierda -->
+      <div class="logo-container">
+        <img src="../img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+      </div>
+      <!-- Título centrado -->
+      <h1 class="titulo">TrackVer A&A</h1>
+    </div>
+
+    <!-- Menú de navegación -->
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="Panel.html">Panel Principal</a></li>
+        <li><a href="Registro.html">Registrar GPS</a></li>
+        <li><a href="Consulta.html">Consultar Registros</a></li>
+        <li><a href="alertas.html">Alertas</a></li>
+        <li><a href="Index.html">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Área de contenido principal -->
+  <main>
+    <!-- Sección del contenedor de registro -->
+    <section class="registro-contenedor">
+      <!-- Vista previa de los datos -->
+      <div class="preview">
+        <h3>Vista previa</h3>
+        <p><strong>Vehículo:</strong> <span id="previewVehiculo">-</span></p>
+        <p><strong>Latitud:</strong> <span id="previewLat">-</span></p>
+        <p><strong>Longitud:</strong> <span id="previewLon">-</span></p>
+        <p><strong>Descripción:</strong> <span id="previewDesc">-</span></p>
+      </div>
+
+      <!-- Formulario de registro -->
+      <form class="registro-form" id="registroForm">
+        <label for="vehiculo">Vehículo:</label>
+        <input type="text" id="vehiculo" placeholder="Ej. Volvo TR 430" required>
+
+        <label for="latitud">Latitud:</label>
+        <input type="number" step="any" id="latitud" placeholder="Ej. 25.6866" required>
+
+        <label for="longitud">Longitud:</label>
+        <input type="number" step="any" id="longitud" placeholder="Ej. -100.3161" required>
+
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" placeholder="Detalles del punto" required></textarea>
+
+        <button type="submit">Guardar</button>
+      </form>
+
+      <!-- Mapa para seleccionar ubicación -->
+      <div class="mapa-contenedor">
+        <h3>Seleccionar ubicación en el mapa</h3>
+        <div id="mapa" style="height: 300px; border-radius: 12px;"></div>
+      </div>
+    </section>
+  </main>
+  <!-- Sección del pie de página -->
+  <footer class="footer">
+    <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../20_JavaScript/registro.js"></script>
+</body>
+</html>
