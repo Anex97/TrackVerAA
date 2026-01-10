@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>TrackVer A&A - Alertas</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../20_FrontEnd/styles.css">
 </head>
 <body>
   <!-- Sección del encabezado con logo, título y navegación -->
@@ -11,7 +11,7 @@
     <div class="header-container">
       <!-- Logo alineado a la izquierda -->
       <div class="logo-container">
-        <img src="img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+        <img src="../20_FrontEnd/img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
       </div>
       <!-- Título centrado -->
       <h1 class="titulo">TrackVer A&A</h1>
@@ -20,11 +20,11 @@
     <!-- Menú de navegación -->
     <nav>
       <ul class="nav-menu">
-        <li><a href="panel.html">Panel Principal</a></li>
-        <li><a href="registro.html">Registrar GPS</a></li>
-        <li><a href="consulta.html">Consultar Registros</a></li>
+        <li><a href="Panel.html">Panel Principal</a></li>
+        <li><a href="Registro.html">Registrar GPS</a></li>
+        <li><a href="Consulta.html">Consultar Registros</a></li>
         <li><a href="alertas.html">Alertas</a></li>
-        <li><a href="index.html">Cerrar Sesión</a></li>
+        <li><a href="Index.html">Cerrar Sesión</a></li>
       </ul>
     </nav>
   </header>
@@ -37,12 +37,12 @@
 
       <!-- Controles de filtrado -->
       <div class="filtros">
-        <input type="text" placeholder="Buscar por vehículo">
-        <input type="text" placeholder="Buscar por tipo de alerta">
-        <input type="date" name="fechaInicio">
-        <input type="date" name="fechaFin">
-        <button type="button">Filtrar</button>
-        <button type="button">Mostrar todas</button>
+        <input type="text" id="filtroVehiculo" placeholder="Buscar por vehículo">
+        <input type="text" id="filtroTipo" placeholder="Buscar por tipo de alerta">
+        <input type="date" id="fechaInicio">
+        <input type="date" id="fechaFin">
+        <button type="button" onclick="filtrarAlertas()">Filtrar</button>
+        <button type="button" onclick="mostrarTodas()">Mostrar todas</button>
       </div>
 
       <!-- Tabla de alertas -->
@@ -83,5 +83,7 @@
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>
+
+  <script src="../20_JavaScript/alertas.js"></script>
 </body>
 </html>

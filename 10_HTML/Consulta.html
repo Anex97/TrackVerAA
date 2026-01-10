@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TrackVer A&A - Consulta</title>
+  <link rel="stylesheet" href="../20_FrontEnd/styles.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="../20_FrontEnd/img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+      </div>
+      <h1 class="titulo">TrackVer A&A</h1>
+    </div>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="Panel.html">Panel Principal</a></li>
+        <li><a href="Registro.html">Registrar GPS</a></li>
+        <li><a href="Consulta.html">Consultar Registros</a></li>
+        <li><a href="alertas.html">Alertas</a></li>
+        <li><a href="Index.html">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Contenido principal -->
+  <main>
+    <section class="consulta-contenedor">
+      <!-- Tabla + filtros -->
+      <div class="tabla-contenedor">
+        <h2>Registros</h2>
+
+        <!-- Filtros -->
+        <div class="filtros">
+          <input type="text" id="filtroVehiculo" placeholder="Buscar por vehículo">
+          <input type="text" id="filtroLat" placeholder="Latitud">
+          <input type="text" id="filtroLon" placeholder="Longitud">
+          <input type="text" id="filtroEstado" placeholder="Estado">
+          <input type="date" id="filtroFechaInicio">
+          <input type="date" id="filtroFechaFin">
+          <button onclick="filtrarTabla()">Filtrar</button>
+          <button onclick="resetTabla()">Mostrar todas</button>
+          <button onclick="descargarCSV()">Descargar CSV</button>
+        </div>
+
+        <!-- Tabla -->
+        <table class="consulta-tabla" id="tablaRegistros">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vehículo</th>
+              <th>Latitud</th>
+              <th>Longitud</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="mostrarMapa(25.6866142, -100.3161139)">
+              <td>1</td>
+              <td>Volvo TR 430</td>
+              <td>25.6866142</td>
+              <td>-100.3161139</td>
+              <td>Nuevo León</td>
+              <td>2025-12-14 11:45</td>
+            </tr>
+            <tr onclick="mostrarMapa(25.7801265, -100.1887312)">
+              <td>2</td>
+              <td>Volvo TR 500</td>
+              <td>25.7801265</td>
+              <td>-100.1887312</td>
+              <td>Nuevo León</td>
+              <td>2025-12-14 10:30</td>
+            </tr>
+            <tr onclick="mostrarMapa(25.7260987, -100.3112456)">
+              <td>3</td>
+              <td>Kenworth T680</td>
+              <td>25.7260987</td>
+              <td>-100.3112456</td>
+              <td>Nuevo León</td>
+              <td>2025-12-13 18:20</td>
+            </tr>
+            <tr onclick="mostrarMapa(25.8321459, -100.2109874)">
+              <td>4</td>
+              <td>Freightliner Cascadia</td>
+              <td>25.8321459</td>
+              <td>-100.2109874</td>
+              <td>Nuevo León</td>
+              <td>2025-12-13 15:05</td>
+            </tr>
+            <tr onclick="mostrarMapa(25.6423156, -100.2896541)">
+              <td>5</td>
+              <td>Volvo FH16</td>
+              <td>25.6423156</td>
+              <td>-100.2896541</td>
+              <td>Nuevo León</td>
+              <td>2025-12-12 09:50</td>
+            </tr>
+            <tr onclick="mostrarMapa(20.6597, -103.3496)">
+              <td>6</td>
+              <td>Kenworth W900</td>
+              <td>20.6597</td>
+              <td>-103.3496</td>
+              <td>Jalisco</td>
+              <td>2025-12-14 14:00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mapa con Leaflet -->
+      <div class="mapa-contenedor">
+        <h2>Mapa de ubicaciones</h2>
+        <div id="mapa" style="height: 400px; border-radius: 12px;"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../20_JavaScript/consulta.js"></script>
+</body>
+</html>
