@@ -4,6 +4,44 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 public class InitDB {
+    // =========================
+    // TABLA VEHICULOS (vehiculos.db)
+    // =========================
+    public static void crearTablaVehiculos() {
+        String sql = "CREATE TABLE IF NOT EXISTS vehiculos (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "marca TEXT NOT NULL," +
+                     "modelo TEXT NOT NULL," +
+                     "placas TEXT UNIQUE NOT NULL," +
+                     "anio INTEGER NOT NULL)";
+        try (Connection conn = ConexionSQLite.conectarVehiculos();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'vehiculos' lista en vehiculos.db");
+        } catch (Exception e) {
+            System.out.println("Error creando tabla vehiculos: " + e.getMessage());
+        }
+    }
+
+    // =========================
+    // TABLA ALERTAS (alertas.db)
+    // =========================
+    public static void crearTablaAlertas() {
+        String sql = "CREATE TABLE IF NOT EXISTS alertas (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "vehiculo_id INTEGER NOT NULL," +
+                     "tipo TEXT NOT NULL," +
+                     "descripcion TEXT," +
+                     "fecha TEXT NOT NULL," +
+                     "estado TEXT NOT NULL)";
+        try (Connection conn = ConexionSQLite.conectarAlertas();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'alertas' lista en alertas.db");
+        } catch (Exception e) {
+            System.out.println("Error creando tabla alertas: " + e.getMessage());
+        }
+    }
 
     // =========================
     // TABLA USUARIOS (usuarios.db)

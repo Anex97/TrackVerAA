@@ -16,11 +16,15 @@ public class Main {
         InitDB.crearTablaUsuarios();
         InitDB.crearTablaAuditorias();
         InitDB.crearTablaPosiciones();
+        InitDB.crearTablaVehiculos();
+        InitDB.crearTablaAlertas();
 
         // 2) Insertar datos semilla
         SeedDB.insertarUsuarios();
         SeedDB.insertarAuditorias();
         SeedDB.insertarPosiciones();
+        SeedDB.insertarVehiculos();
+        SeedDB.insertarAlertas();
 
         // 3) Menú principal
         boolean salir = false;

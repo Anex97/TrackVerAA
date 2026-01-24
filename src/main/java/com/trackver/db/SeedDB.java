@@ -4,6 +4,55 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class SeedDB {
+    // =========================
+    // VEHICULOS
+    // =========================
+    public static void insertarVehiculos() {
+        String sql = "INSERT INTO vehiculos (marca, modelo, placas, anio) VALUES (?, ?, ?, ?)";
+        try (Connection conn = ConexionSQLite.conectarVehiculos();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "Volvo");
+            pstmt.setString(2, "TR 430");
+            pstmt.setString(3, "ABC-123");
+            pstmt.setInt(4, 2022);
+            pstmt.executeUpdate();
+
+            pstmt.setString(1, "Volvo");
+            pstmt.setString(2, "TR 500");
+            pstmt.setString(3, "DEF-456");
+            pstmt.setInt(4, 2023);
+            pstmt.executeUpdate();
+
+            System.out.println("Vehículos iniciales insertados en vehiculos.db");
+        } catch (Exception e) {
+            System.out.println("Error insertando vehículos iniciales: " + e.getMessage());
+        }
+    }
+
+    // =========================
+    // ALERTAS
+    // =========================
+    public static void insertarAlertas() {
+        String sql = "INSERT INTO alertas (vehiculo_id, tipo, descripcion, fecha, estado) VALUES (?, ?, ?, date('now'), ?)";
+        try (Connection conn = ConexionSQLite.conectarAlertas();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, 1); // Volvo TR 430
+            pstmt.setString(2, "Velocidad");
+            pstmt.setString(3, "Exceso de velocidad detectado");
+            pstmt.setString(4, "Pendiente");
+            pstmt.executeUpdate();
+
+            pstmt.setInt(1, 2); // Volvo TR 500
+            pstmt.setString(2, "Zona restringida");
+            pstmt.setString(3, "Entrada a zona no autorizada");
+            pstmt.setString(4, "Atendida");
+            pstmt.executeUpdate();
+
+            System.out.println("Alertas iniciales insertadas en alertas.db");
+        } catch (Exception e) {
+            System.out.println("Error insertando alertas iniciales: " + e.getMessage());
+        }
+    }
 
     // =========================
     // USUARIOS
