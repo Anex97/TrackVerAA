@@ -410,7 +410,11 @@ public class Main {
                         String desc = rs.getString("descripcion");
                         String fecha = rs.getString("fecha");
                         String estado = rs.getString("estado");
-                        sb.append(String.format("{\"id\":%d,\"vehiculo_id\":%d,\"tipo\":\"%s\",\"descripcion\":\"%s\",\"fecha\":\"%s\",\"estado\":\"%s\"}", id, vid, tipo == null ? "" : tipo.replace("\"","\\\""), desc == null ? "" : desc.replace("\"","\\\""), fecha == null ? "" : fecha.replace("\"","\\\""), estado == null ? "" : estado.replace("\"","\\\"")));
+                        int correoEnviado = 0;
+                        int smsEnviado = 0;
+                        try { correoEnviado = rs.getInt("correo_enviado"); } catch (Exception ex) { }
+                        try { smsEnviado = rs.getInt("sms_enviado"); } catch (Exception ex) { }
+                        sb.append(String.format("{\"id\":%d,\"vehiculo_id\":%d,\"tipo\":\"%s\",\"descripcion\":\"%s\",\"fecha\":\"%s\",\"estado\":\"%s\",\"correo_enviado\":%d,\"sms_enviado\":%d}", id, vid, tipo == null ? "" : tipo.replace("\"","\\\""), desc == null ? "" : desc.replace("\"","\\\""), fecha == null ? "" : fecha.replace("\"","\\\""), estado == null ? "" : estado.replace("\"","\\\""), correoEnviado, smsEnviado));
                     }
                     sb.append(']');
                     return sb.toString();
@@ -418,6 +422,24 @@ public class Main {
             } catch (Exception ex) {
                 res.status(500);
                 return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
+        // API: endpoint de prueba para crear una alerta (solo pruebas)
+        // Uso: GET /api/alertas/test?vehiculoId=123&tipo=TEST&descripcion=Prueba
+        get("/api/alertas/test", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String vidS = req.queryParams("vehiculoId");
+            if (vidS == null || vidS.isEmpty()) { res.status(400); return "{\"ok\":false,\"message\":\"vehiculoId requerido\"}"; }
+            String tipo = req.queryParams("tipo"); if (tipo == null) tipo = "TEST";
+            String desc = req.queryParams("descripcion"); if (desc == null) desc = "Alerta de prueba";
+            try {
+                int vid = Integer.parseInt(vidS);
+                boolean ok = com.trackver.db.AlertaDAO.crearAlerta(vid, tipo, desc, "TRIGGERED");
+                if (ok) return "{\"ok\":true}";
+                res.status(500); return "{\"ok\":false,\"message\":\"no se pudo crear alerta\"}";
+            } catch (Exception ex) {
+                res.status(500); return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
             }
         });
 
@@ -448,6 +470,47 @@ public class Main {
                 res.status(500);
                 return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
             }
+        });
+
+        // API: marcar correo/sms enviado o actualizar flags (POST)
+        post("/api/alertas/mark", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            if (idS == null || idS.isEmpty()) { res.status(400); return "{\"ok\":false,\"message\":\"id requerido\"}"; }
+            String correoS = req.queryParams("correo");
+            String smsS = req.queryParams("sms");
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas()) {
+                int totalUpdated = 0;
+                int id = Integer.parseInt(idS);
+                if (correoS != null) {
+                    try (java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE alertas SET correo_enviado = ? WHERE id = ?")) {
+                        ps.setInt(1, Integer.parseInt(correoS));
+                        ps.setInt(2, id);
+                        totalUpdated += ps.executeUpdate();
+                    }
+                }
+                if (smsS != null) {
+                    try (java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE alertas SET sms_enviado = ? WHERE id = ?")) {
+                        ps.setInt(1, Integer.parseInt(smsS));
+                        ps.setInt(2, id);
+                        totalUpdated += ps.executeUpdate();
+                    }
+                }
+                // If neither param provided, return bad request
+                if (correoS == null && smsS == null) { res.status(400); return "{\"ok\":false,\"message\":\"correo o sms requerido\"}"; }
+                return String.format("{\"ok\":%b}", totalUpdated>0);
+            } catch (Exception ex) { res.status(500); return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\"")); }
+        });
+
+        // API: descartar/eliminar alerta (POST)
+        post("/api/alertas/dismiss", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            if (idS == null || idS.isEmpty()) { res.status(400); return "{\"ok\":false,\"message\":\"id requerido\"}"; }
+            try {
+                boolean ok = com.trackver.db.AlertaDAO.eliminarAlerta(Integer.parseInt(idS));
+                return String.format("{\"ok\":%b}", ok);
+            } catch (Exception ex) { res.status(500); return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\"")); }
         });
 
         // API: listar asignaciones de geocercas a vehículos

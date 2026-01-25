@@ -490,3 +490,27 @@ td.action-cell .btn-delete-vel { margin: 0 !important; }
 .btn-confirm { background: var(--color-primario); color: #fff; border: none; padding: 8px 12px; border-radius:6px; cursor:pointer; }
 .btn-confirm:hover { background: var(--color-secundario); }
 .btn-cancel { background: #f0f0f0; color:#333; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+
+/* Preview card for geocerca */
+.preview-card { background: white; padding: 12px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+.preview-card h4 { color: var(--color-primario); margin-bottom:8px; }
+.preview-card div { margin-bottom:6px; font-size:0.95rem; }
+.preview-card .small-muted { color:#666; font-size:0.85rem; }
+
+@media (max-width: 900px) {
+  .cards-row { flex-direction: column; }
+  .preview-card { width:100% !important; order:2; }
+  form#alertForm { order:1; width:100%; }
+}
+
+/* Leaflet map container tweaks inside preview card */
+.preview-card .leaflet-container { border-radius:6px; height:180px; }
+
+/* Recent alerts styles for Panel */
+.alertas .alerta-lista { list-style:none; padding-left:0; margin:0; }
+.alertas .alerta-lista li { border-left:4px solid transparent; padding:8px 12px; margin-bottom:8px; background:#fff; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.alerta-triggered { border-left-color:#d32f2f; }
+.alerta-item em { color:#666; margin-left:8px; font-style:normal; font-size:0.85rem; }
+
+/* Scrollable table wrapper for Panel alerts */
+.table-scroll { max-height: 360px; overflow: auto; }

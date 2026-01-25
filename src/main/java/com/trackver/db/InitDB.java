@@ -93,6 +93,30 @@ public class InitDB {
             } catch (Exception ex) {
                 System.out.println("No se pudo crear tabla velocidades_asignadas: " + ex.getMessage());
             }
+            // Asegurar columnas correo_enviado y sms_enviado en tabla alertas (migración de esquema)
+            try (ResultSet rsCols = stmt.executeQuery("PRAGMA table_info('alertas')")) {
+                boolean tieneCorreo = false;
+                boolean tieneSms = false;
+                while (rsCols.next()) {
+                    String col = rsCols.getString("name");
+                    if ("correo_enviado".equalsIgnoreCase(col)) tieneCorreo = true;
+                    if ("sms_enviado".equalsIgnoreCase(col)) tieneSms = true;
+                }
+                if (!tieneCorreo) {
+                    try (Statement s2 = conn.createStatement()) {
+                        s2.execute("ALTER TABLE alertas ADD COLUMN correo_enviado INTEGER DEFAULT 0");
+                        System.out.println("Columna 'correo_enviado' añadida a tabla alertas");
+                    } catch (Exception ex) { System.out.println("No se pudo añadir columna correo_enviado: " + ex.getMessage()); }
+                }
+                if (!tieneSms) {
+                    try (Statement s3 = conn.createStatement()) {
+                        s3.execute("ALTER TABLE alertas ADD COLUMN sms_enviado INTEGER DEFAULT 0");
+                        System.out.println("Columna 'sms_enviado' añadida a tabla alertas");
+                    } catch (Exception ex) { System.out.println("No se pudo añadir columna sms_enviado: " + ex.getMessage()); }
+                }
+            } catch (Exception ex) {
+                System.out.println("Error comprobando columnas alertas: " + ex.getMessage());
+            }
         } catch (Exception e) {
             System.out.println("Error creando tabla alertas: " + e.getMessage());
         }

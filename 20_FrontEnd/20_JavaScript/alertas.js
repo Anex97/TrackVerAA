@@ -1,5 +1,9 @@
 // alertas.js - Funcionalidad para la página de alertas
 // Simple helpers for the alertas UI
+// Leaflet preview map state
+let _previewMap = null;
+let _previewCircle = null;
+let _previewMarker = null;
 async function fetchVehiculos(usuarioId) {
   try {
     const resp = await fetch('/api/vehiculos' + (usuarioId ? ('?usuarioId=' + encodeURIComponent(usuarioId)) : ''));
@@ -72,6 +76,99 @@ function showPasswordModal() {
   });
 }
 
+// Update the geocerca preview card (text + mini-map)
+function updateGeocercaPreview() {
+  try {
+    const nombre = (document.getElementById('gcNombre') || {}).value || '';
+    const lat = (document.getElementById('gcLat') || {}).value || '';
+    const lon = (document.getElementById('gcLon') || {}).value || '';
+    const radio = (document.getElementById('gcRadio') || {}).value || '';
+    const sel = document.getElementById('gcVehiculoSelect');
+    const vehLabel = sel && sel.selectedIndex >= 0 ? (sel.options[sel.selectedIndex].text || '') : '';
+    document.getElementById('previewGcNombre') && (document.getElementById('previewGcNombre').innerText = nombre || '-');
+    document.getElementById('previewGcLat') && (document.getElementById('previewGcLat').innerText = lat || '-');
+    document.getElementById('previewGcLon') && (document.getElementById('previewGcLon').innerText = lon || '-');
+    document.getElementById('previewGcRadio') && (document.getElementById('previewGcRadio').innerText = radio || '-');
+    document.getElementById('previewGcVeh') && (document.getElementById('previewGcVeh').innerText = vehLabel || '-');
+    // update map preview: initialize Leaflet map and draw circle when possible
+    const mapEl = document.getElementById('gcPreviewMap');
+    const latNum = parseFloat(lat);
+    const lonNum = parseFloat(lon);
+    const radNum = parseFloat(radio) || 0;
+    // Ensure map exists (centered on Mexico by default) if Leaflet available
+    if (mapEl && window.L) {
+      try {
+        if (!_previewMap) {
+          // Mexico center (approx.) and country-level zoom
+          const mexicoCenter = [23.6345, -102.5528];
+          _previewMap = L.map('gcPreviewMap', { attributionControl: false, zoomControl: true }).setView(mexicoCenter, 5);
+          console.debug('preview: initialized map at', mexicoCenter);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(_previewMap);
+          // sometimes the container needs an invalidateSize to render properly
+          try { _previewMap.invalidateSize(); } catch(e){}
+          // click to set coordinates
+          _previewMap.on('click', function(ev){
+            try {
+              const latc = ev.latlng.lat.toFixed(6);
+              const lonc = ev.latlng.lng.toFixed(6);
+              const inLat = document.getElementById('gcLat');
+              const inLon = document.getElementById('gcLon');
+              if (inLat) inLat.value = latc;
+              if (inLon) inLon.value = lonc;
+              updateGeocercaPreview();
+            } catch(e) { console.warn('map click handler error', e); }
+          });
+        }
+      } catch (err) {
+        console.warn('Leaflet init error', err);
+      }
+    }
+    if (mapEl && !isNaN(latNum) && !isNaN(lonNum) && window.L) {
+      try {
+        const latlng = [latNum, lonNum];
+        if (!_previewCircle) {
+          console.debug('preview: drawing circle', latlng, 'r=', radNum);
+          _previewCircle = L.circle(latlng, { radius: radNum || 50, color: '#3388ff', fillColor: '#3388ff', fillOpacity: 0.15 }).addTo(_previewMap);
+        } else {
+          _previewCircle.setLatLng(latlng);
+          _previewCircle.setRadius(radNum || 50);
+        }
+        if (!_previewMarker) {
+          _previewMarker = L.marker(latlng).addTo(_previewMap);
+        } else {
+          _previewMarker.setLatLng(latlng);
+        }
+        // auto-zoom to fit the circle
+        try {
+          const bounds = _previewCircle.getBounds();
+          _previewMap.fitBounds(bounds, { padding: [20,20] });
+          // ensure tiles/layout are recalculated after fit
+          setTimeout(() => { try { _previewMap.invalidateSize(); } catch(e){} }, 200);
+        } catch (e) {
+          _previewMap.setView(latlng, 13);
+        }
+      } catch (err) {
+        console.warn('Leaflet preview error', err);
+      }
+    } else {
+      // cleanup leaflet instances if present
+      // if no valid coords, keep map but remove circle/marker if exist
+      if (_previewMap && (!mapEl || isNaN(latNum) || isNaN(lonNum))) {
+        try { if (_previewCircle) { _previewMap.removeLayer(_previewCircle); _previewCircle = null; } } catch(e){}
+        try { if (_previewMarker) { _previewMap.removeLayer(_previewMarker); _previewMarker = null; } } catch(e){}
+      }
+      // fallback: if element is an iframe or supports src, set embed fallback when coordinates present
+      if (mapEl && !isNaN(latNum) && !isNaN(lonNum) && mapEl.tagName === 'IFRAME') {
+        const zoom = 13;
+        mapEl.src = `https://www.openstreetmap.org/export/embed.html?&marker=${latNum},${lonNum}&zoom=${zoom}`;
+      }
+    }
+  } catch (e) { console.warn('updateGeocercaPreview error', e); }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const tipoSelect = document.getElementById('tipoAlerta');
   const fieldsContainer = document.getElementById('fieldsContainer');
@@ -95,7 +192,20 @@ document.addEventListener('DOMContentLoaded', () => {
         <input id="gcRadio" type="number" step="any" placeholder="50">
       `;
       // Cargar lista de vehículos para asignación directa
-      cargarVehiculosEn('gcVehiculoSelect');
+      cargarVehiculosEn('gcVehiculoSelect').then(()=> updateGeocercaPreview());
+      // attach preview updates to inputs
+      setTimeout(()=>{
+        const inNombre = document.getElementById('gcNombre');
+        const inLat = document.getElementById('gcLat');
+        const inLon = document.getElementById('gcLon');
+        const inRadio = document.getElementById('gcRadio');
+        const selVeh = document.getElementById('gcVehiculoSelect');
+        if (inNombre) inNombre.addEventListener('input', updateGeocercaPreview);
+        if (inLat) inLat.addEventListener('input', updateGeocercaPreview);
+        if (inLon) inLon.addEventListener('input', updateGeocercaPreview);
+        if (inRadio) inRadio.addEventListener('input', updateGeocercaPreview);
+        if (selVeh) selVeh.addEventListener('change', updateGeocercaPreview);
+      }, 150);
     } else {
       fieldsContainer.innerHTML = `
         <label>Vehículo:</label>

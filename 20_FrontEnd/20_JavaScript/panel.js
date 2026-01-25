@@ -64,6 +64,71 @@ document.addEventListener('DOMContentLoaded', actualizarDashboard);
 // Ejecutar una vez inmediatamente por si el evento ya ocurrió
 actualizarDashboard();
 
+// (Se elimina la sección de alertas recientes; se usa solo la tabla completa abajo)
+
+// --- Tabla completa de alertas y acciones ---
+async function cargarTodasAlertas() {
+  const u = localStorage.getItem('usuario');
+  if (!u) return;
+  const usuario = JSON.parse(u);
+  try {
+    const vResp = await fetch('/api/vehiculos?usuarioId=' + encodeURIComponent(usuario.id));
+    let vehiculos = [];
+    if (vResp.ok) vehiculos = await vResp.json();
+    const vehIds = new Set((vehiculos || []).map(v => Number(v.id)));
+
+    const aResp = await fetch('/api/alertas');
+    if (!aResp.ok) { console.warn('No se pudieron cargar alertas', aResp.status); return; }
+    let alertas = await aResp.json(); if (!Array.isArray(alertas)) alertas = [];
+
+    // filtrar alertas del usuario
+    const userAlerts = alertas.filter(a => vehIds.has(Number(a.vehiculo_id)));
+    const tbody = document.querySelector('#tableTodasAlertas tbody');
+    if (!tbody) return;
+    if (userAlerts.length === 0) { tbody.innerHTML = '<tr><td colspan="8">No hay alertas</td></tr>'; return; }
+    // map veh id -> label
+    const vehMap = {};
+    vehiculos.forEach(v => vehMap[v.id] = (v.modelo? v.modelo+' - ':'') + (v.placas||('id:'+v.id)));
+    tbody.innerHTML = userAlerts.map(a => {
+      const correo = (a.correo_enviado && Number(a.correo_enviado)) ? 'Sí' : 'No';
+      const sms = (a.sms_enviado && Number(a.sms_enviado)) ? 'Sí' : 'No';
+      const vehLabel = vehMap[a.vehiculo_id] || ('id:'+a.vehiculo_id);
+      return `<tr data-id="${a.id}"><td>${a.id}</td><td>${vehLabel}</td><td>${a.tipo||''}</td><td>${a.descripcion||''}</td><td>${a.fecha||''}</td><td>${correo}</td><td>${sms}</td><td class="action-cell"><button class="btn-mark-correo" data-id="${a.id}">Marcar correo</button> <button class="btn-mark-sms" data-id="${a.id}">Marcar SMS</button> <button class="btn-dismiss" data-id="${a.id}">Desestimar</button></td></tr>`;
+    }).join('');
+
+    // attach handlers
+    document.querySelectorAll('.btn-mark-correo').forEach(b => b.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      try {
+        const resp = await fetch('/api/alertas/mark?id=' + encodeURIComponent(id) + '&correo=1', { method: 'POST' });
+        if (resp.ok) { await cargarTodasAlertas(); return; }
+        alert('Error marcando correo');
+      } catch (ex) { alert('Error conectando'); }
+    }));
+    document.querySelectorAll('.btn-mark-sms').forEach(b => b.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      try {
+        const resp = await fetch('/api/alertas/mark?id=' + encodeURIComponent(id) + '&sms=1', { method: 'POST' });
+        if (resp.ok) { await cargarTodasAlertas(); return; }
+        alert('Error marcando SMS');
+      } catch (ex) { alert('Error conectando'); }
+    }));
+    document.querySelectorAll('.btn-dismiss').forEach(b => b.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (!confirm('Desestimar alerta id=' + id + '?')) return;
+      try {
+        const resp = await fetch('/api/alertas/dismiss?id=' + encodeURIComponent(id), { method: 'POST' });
+        if (resp.ok) { await cargarTodasAlertas(); return; }
+        alert('Error descartando alerta');
+      } catch (ex) { alert('Error conectando'); }
+    }));
+
+  } catch (e) { console.error('Error cargando todas alertas', e); }
+}
+
+document.addEventListener('DOMContentLoaded', () => { cargarTodasAlertas(); });
+setInterval(cargarTodasAlertas, 30000);
+
 // --- Modal agregar vehículo ---
 function showAddVehModal() {
   document.getElementById('modalAddVeh').style.display = 'block';

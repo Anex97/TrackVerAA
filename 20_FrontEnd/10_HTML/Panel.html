@@ -76,22 +76,17 @@
         </div>
       </div>
     </section>
-    <!-- Sección de alertas recientes -->
+    <!-- Tabla completa de alertas del usuario -->
     <section class="alertas">
-      <h2>Alertas recientes</h2>
-      <ul class="alerta-lista">
-        <li>
-          <strong>Vehículo:</strong> Volvo TR 430 — 
-          <span>Exceso de velocidad detectado</span> 
-          <em>(14/12/2025 11:45)</em>
-        </li>
-        <li>
-          <strong>Vehículo:</strong> Volvo TR 500 — 
-          <span>Entrada a zona restringida</span> 
-          <em>(14/12/2025 10:30)</em>
-        </li>
-      </ul>
-      <button onclick="location.href='alertas.html'">Ver todas las Alertas</button>
+      <h2>Todas las alertas del usuario</h2>
+      <div class="table-wrap table-scroll" style="background:#fff;padding:12px;border-radius:8px;">
+        <table id="tableTodasAlertas" class="consulta-tabla">
+          <thead>
+            <tr><th>ID</th><th>Vehículo</th><th>Tipo</th><th>Descripción</th><th>Fecha</th><th>Correo</th><th>SMS</th><th>Acciones</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
   </main>
   <!-- Sección del pie de página -->
