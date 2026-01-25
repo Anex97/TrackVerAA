@@ -133,21 +133,9 @@ async function loadVehiculos() {
            `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
            `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
            `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
-           `<td style="padding:8px;border-bottom:1px solid #eee;"><button type="button" data-placas="${escapeHtml(v.placas||'')}">Seleccionar</button></td>`;
+           `<td style="padding:8px;border-bottom:1px solid #eee;text-align:right;"><button type="button" data-delete-id="${v.id}" style="margin-left:8px;color:#c00;">Borrar</button></td>`;
       tbody.appendChild(tr);
     }
-    // add click handlers for seleccionar
-    tbody.querySelectorAll('button[data-placas]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const p = btn.getAttribute('data-placas');
-        const placasEl = document.getElementById('placas');
-        if (placasEl) {
-          placasEl.value = p;
-          actualizarVistaPrevia();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      });
-    });
   } catch (e) {
     console.error('Error cargando vehículos', e);
     tbody.innerHTML = '<tr><td colspan="5">Error al obtener vehículos.</td></tr>';
@@ -207,10 +195,10 @@ function _renderListToTable(list) {
   for (const v of list) {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.placas||'')}</td>` +
-                   `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
-                   `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
-                   `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
-                   `<td style="padding:8px;border-bottom:1px solid #eee;"><button type="button" data-placas="${escapeHtml(v.placas||'')}">Seleccionar</button> <button type="button" data-delete-id="${v.id}" style="margin-left:8px;color:#c00;">Borrar</button></td>`;
+         `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
+         `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
+         `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
+         `<td style="padding:8px;border-bottom:1px solid #eee;text-align:right;"><button type="button" data-delete-id="${v.id}" style="margin-left:8px;color:#c00;">Borrar</button></td>`;
     frag.appendChild(tr);
   }
   // commit fragment
@@ -372,19 +360,6 @@ window.addEventListener('DOMContentLoaded', () => {
       console.log('tbody click event target=', ev.target);
       const target = ev.target;
       if (!(target instanceof Element)) return;
-      if (target.matches('button[data-placas]')) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-        const p = target.getAttribute('data-placas');
-        const placasEl = document.getElementById('placas');
-        if (placasEl) {
-          placasEl.value = p;
-          actualizarVistaPrevia();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        return;
-      }
       if (target.matches('button[data-delete-id]')) {
         ev.preventDefault();
         ev.stopPropagation();
