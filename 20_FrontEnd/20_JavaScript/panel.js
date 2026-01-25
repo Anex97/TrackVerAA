@@ -9,6 +9,17 @@ async function actualizarDashboard() {
     return;
   }
   const usuario = JSON.parse(u);
+  // Update greeting on the panel: show 'Admin' for admin users or the user's name
+  try {
+    const gEl = document.getElementById('greetingName');
+    if (gEl) {
+      if (usuario && usuario.nivelAcceso && Number(usuario.nivelAcceso) === 2) {
+        gEl.textContent = 'Admin';
+      } else {
+        gEl.textContent = usuario.nombre || '-';
+      }
+    }
+  } catch (e) { /* ignore DOM errors */ }
 
   try {
     // Vehículos (por usuario)
