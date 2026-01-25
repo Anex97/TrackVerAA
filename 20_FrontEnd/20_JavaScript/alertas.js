@@ -133,11 +133,36 @@ async function cargarVelocidades() {
     if (!resp.ok) { tbody.innerHTML = '<tr><td colspan="3">Error al cargar</td></tr>'; return; }
     const list = await resp.json();
     if (!Array.isArray(list) || list.length === 0) { tbody.innerHTML = '<tr><td colspan="3">No hay límites asignados</td></tr>'; return; }
-    // opcional: show vehicle plates by fetching vehiculos list
-    const vehs = await fetchVehiculos(usuario);
+    // obtener lista completa de vehículos (sin filtrar por usuario) para mostrar modelo/placas
+    const vehs = await fetchVehiculos();
     const byId = {};
     vehs.forEach(v => byId[v.id] = v);
-    tbody.innerHTML = list.map(v => `<tr><td>${v.id}</td><td>${byId[v.vehiculo_id] ? (byId[v.vehiculo_id].placas + ' ' + (byId[v.vehiculo_id].marca||'')) : 'id:'+v.vehiculo_id}</td><td>${Math.round(v.vel_max_kmh)}</td></tr>`).join('');
+    tbody.innerHTML = list.map(v => {
+      const veh = byId[v.vehiculo_id];
+      const vehLabel = veh ? ((veh.modelo?veh.modelo+' - ':'') + (veh.placas||'')) : ('id:'+v.vehiculo_id);
+      return `<tr data-id="${v.id}"><td>${v.id}</td><td>${vehLabel}</td><td>${Math.round(v.vel_max_kmh)}</td><td><button class="btn-delete-vel" data-id="${v.id}" title="Eliminar">&times;</button></td></tr>`;
+    }).join('');
+    // attach handlers
+    document.querySelectorAll('.btn-delete-vel').forEach(b => b.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (!confirm('Eliminar límite de velocidad id=' + id + '?')) return;
+      try {
+        const resp = await fetch('/api/velocidades/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: parseInt(id)}) });
+        if (resp.ok) {
+          const j = await resp.json();
+          if (j.ok) {
+            // quitar fila
+            const row = document.querySelector(`#tableVelocidades tr[data-id=\"${id}\"]`);
+            if (row) row.remove();
+            return;
+          }
+          alert('Error: ' + (j.message||JSON.stringify(j)));
+          return;
+        }
+        const txt = await resp.text();
+        alert('Error: ' + resp.status + ' ' + txt);
+      } catch (ex) { alert('Error conectando al eliminar'); }
+    }));
   } catch (e) { const tb = document.querySelector('#tableVelocidades tbody'); if(tb) tb.innerHTML = '<tr><td colspan="3">Error conectando</td></tr>'; }
 }
 

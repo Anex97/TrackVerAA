@@ -6,13 +6,29 @@
   <link rel="stylesheet" href="../styles.css">
   <style>
     /* Small local styles to improve form appearance */
-    .alert-card { background: #fff; padding:16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+    .alert-card { background: #fff; padding:36px 16px 16px 16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.06); position:relative; }
     .alert-card label { display:block; font-size:0.9rem; color:#333; margin-top:8px; }
     .alert-card input, .alert-card select { width:100%; padding:8px 10px; margin-top:4px; box-sizing:border-box; border:1px solid #ccc; border-radius:4px; }
+      /* Layout for two separate cards: left (controls) + right (form) */
+      .cards-row { display:flex; gap:16px; margin-bottom:16px; }
+      .left-card { flex:0 0 200px; }
+      .right-card { flex:1 1 0; }
+      .tipo-alerta-float { display:flex; flex-direction:column; gap:8px; align-items:flex-start; width:100%; }
+      .tipo-alerta-float select, .tipo-alerta-float button { width:100%; box-sizing:border-box; }
+      /* Ensure form inputs/labels are full-width inside their container */
+      #alertForm input, #alertForm select, #alertForm textarea { width:100%; }
+      #alertForm label { display:block; width:100%; margin-top:8px; }
     #alertForm { display:flex; gap:12px; align-items:end; flex-wrap:wrap; }
     #alertForm .small { flex:0 0 120px; }
     #alertForm .large { flex:1 1 320px; }
     .consulta-tabla th { background:#0b5a9a; color:#fff; padding:8px; }
+    /* Delete button style (compact red X) */
+    .btn-delete-vel { padding:4px 8px; border-radius:4px; border:none; background:#c62828; color:#fff; cursor:pointer; font-weight:700; font-size:14px; line-height:1; }
+    .btn-delete-vel:hover { background:#b71c1c; }
+    /* Floating alert-type combobox (positioned inside the section) */
+    .tipo-alerta-float label { display:block; font-size:0.85rem; color:#333; margin-bottom:4px; }
+    .tipo-alerta-float select { padding:6px 8px; border:1px solid #ccc; border-radius:4px; }
+    .tipo-alerta-float button { padding:6px 8px; border-radius:4px; border:none; background:#0b5a9a; color:#fff; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -44,23 +60,26 @@
     <section style="max-width:1000px;margin:16px auto;padding:12px;">
       <h2 style="margin-bottom:10px;">Alertas — Configuración</h2>
 
-      <div class="alert-card" style="margin-bottom:16px;">
-        <!-- Un único formulario que se adapta según tipo seleccionado -->
-        <form id="alertForm">
-          <div class="small">
+      <!-- Two cards: left controls, right form -->
+      <div class="cards-row">
+        <div class="alert-card left-card">
+          <div class="tipo-alerta-float">
             <label for="tipoAlerta">Tipo de Alerta</label>
             <select id="tipoAlerta">
               <option value="geocerca">Geocerca</option>
               <option value="velocidad">Velocidad</option>
             </select>
+            <button type="submit" id="btnAlertSubmit" form="alertForm">Guardar</button>
           </div>
-          <div class="large" id="formFields">
-            <div id="fieldsContainer"></div>
-          </div>
-          <div class="small">
-            <button type="submit" id="btnAlertSubmit">Guardar</button>
-          </div>
-        </form>
+        </div>
+        <div class="alert-card right-card">
+          <!-- Un único formulario que se adapta según tipo seleccionado -->
+          <form id="alertForm">
+            <div class="large" id="formFields">
+              <div id="fieldsContainer"></div>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- Tablas lado a lado: geocercas (izquierda) | límites de velocidad (derecha) -->
@@ -78,17 +97,21 @@
         </div>
 
         <div style="flex:1;min-width:300px;">
+          
+
           <div class="alert-card">
             <h3 style="margin-top:0;">Límites de velocidad configurados</h3>
             <table class="consulta-tabla" id="tableVelocidades">
               <thead>
-                <tr><th>ID</th><th>Vehículo</th><th>Vel. máx (km/h)</th></tr>
+                <tr><th>ID</th><th>Vehículo (Modelo - Placas)</th><th>Vel. máx (km/h)</th><th>Acciones</th></tr>
               </thead>
               <tbody></tbody>
             </table>
           </div>
         </div>
       </div>
+    </section>
+  </main>
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>

@@ -6,6 +6,8 @@ import com.trackver.db.UsuarioDAO;
 import com.trackver.db.UsuarioDAO.UsuarioDTO;
 
 import static spark.Spark.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) {
@@ -22,6 +24,14 @@ public class Main {
         SeedDB.insertarPosiciones();
         SeedDB.insertarVehiculos();
         SeedDB.insertarAlertas();
+        // Limpieza inicial: desactivar límites de velocidad duplicados dejando el más reciente activo por vehículo
+        try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+             java.sql.Statement st = conn.createStatement()) {
+            String cleanup = "UPDATE velocidades_asignadas SET activo=0 WHERE id NOT IN (SELECT MAX(id) FROM velocidades_asignadas WHERE activo=1 GROUP BY vehiculo_id)";
+            st.executeUpdate(cleanup);
+        } catch (Exception e) {
+            System.err.println("Error limpiando duplicados de velocidades: " + e.getMessage());
+        }
         // Insertar datos aleatorios adicionales para demo (vehículos y posiciones)
         SeedDB.insertarDatosAleatorios();
 
@@ -310,21 +320,53 @@ public class Main {
             res.type("application/json; charset=UTF-8");
             String vidS = req.queryParams("vehiculoId");
             String velS = req.queryParams("vel_max_kmh");
+            // Soportar también JSON en el body: {"vehiculoId":9, "vel_max_kmh":50}
+            if ((vidS == null || velS == null) && req.body() != null && !req.body().trim().isEmpty()) {
+                String body = req.body();
+                try {
+                    Pattern pVid = Pattern.compile("\\\"vehiculoId\\\"\\s*:\\s*\\\"?(\\d+)\\\"?");
+                    Matcher mVid = pVid.matcher(body);
+                    if (mVid.find()) vidS = mVid.group(1);
+                    Pattern pVid2 = Pattern.compile("\\\"vehiculo_id\\\"\\s*:\\s*\\\"?(\\d+)\\\"?");
+                    Matcher mVid2 = pVid2.matcher(body);
+                    if (vidS == null && mVid2.find()) vidS = mVid2.group(1);
+                    Pattern pVel = Pattern.compile("\\\"vel_max_kmh\\\"\\s*:\\s*\\\"?([0-9]+(?:\\.[0-9]+)?)\\\"?");
+                    Matcher mVel = pVel.matcher(body);
+                    if (mVel.find()) velS = mVel.group(1);
+                    Pattern pVel2 = Pattern.compile("\\\"velMaxKmh\\\"\\s*:\\s*\\\"?([0-9]+(?:\\.[0-9]+)?)\\\"?");
+                    Matcher mVel2 = pVel2.matcher(body);
+                    if (velS == null && mVel2.find()) velS = mVel2.group(1);
+                } catch (Exception ex) {
+                    // ignore parsing errors; validation below will catch missing params
+                }
+            }
             if (vidS == null || velS == null) {
                 res.status(400);
                 return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
             }
             int vid = Integer.parseInt(vidS);
             double vel = Double.parseDouble(velS);
-            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
-                 java.sql.PreparedStatement ps = conn.prepareStatement("INSERT INTO velocidades_asignadas (vehiculo_id, vel_max_kmh, activo) VALUES (?, ?, 1)", java.sql.Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, vid);
-                ps.setDouble(2, vel);
-                ps.executeUpdate();
-                try (java.sql.ResultSet rk = ps.getGeneratedKeys()) {
-                    if (rk.next()) {
-                        int id = rk.getInt(1);
-                        return String.format("{\"ok\":true,\"id\":%d}", id);
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas()) {
+                // comprobar si ya existe un límite activo para este vehículo
+                try (java.sql.PreparedStatement psCheck = conn.prepareStatement("SELECT COUNT(*) as c FROM velocidades_asignadas WHERE vehiculo_id = ? AND activo = 1")) {
+                    psCheck.setInt(1, vid);
+                    try (java.sql.ResultSet rs = psCheck.executeQuery()) {
+                        if (rs.next() && rs.getInt("c") > 0) {
+                            res.status(409);
+                            return "{\"ok\":false,\"message\":\"Ya existe un límite activo para ese vehículo\"}";
+                        }
+                    }
+                }
+
+                try (java.sql.PreparedStatement ps = conn.prepareStatement("INSERT INTO velocidades_asignadas (vehiculo_id, vel_max_kmh, activo) VALUES (?, ?, 1)", java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                    ps.setInt(1, vid);
+                    ps.setDouble(2, vel);
+                    ps.executeUpdate();
+                    try (java.sql.ResultSet rk = ps.getGeneratedKeys()) {
+                        if (rk.next()) {
+                            int id = rk.getInt(1);
+                            return String.format("{\"ok\":true,\"id\":%d}", id);
+                        }
                     }
                 }
                 return "{\"ok\":false}";
@@ -428,6 +470,33 @@ public class Main {
                     sb.append(']');
                     return sb.toString();
                 }
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
+        // API: eliminar/desactivar límite de velocidad (POST) - params: id (o JSON {"id":123})
+        post("/api/velocidades/delete", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            if ((idS == null || idS.isEmpty()) && req.body() != null && !req.body().trim().isEmpty()) {
+                // intentar extraer id de JSON simple
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\\"id\\\"\\s*:\\s*\\\"?(\\d+)\\\"?").matcher(req.body());
+                if (m.find()) idS = m.group(1);
+            }
+            if (idS == null || idS.isEmpty()) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Falta id\"}";
+            }
+            int id = Integer.parseInt(idS);
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE velocidades_asignadas SET activo=0 WHERE id = ?")) {
+                ps.setInt(1, id);
+                int c = ps.executeUpdate();
+                if (c > 0) return "{\"ok\":true}";
+                res.status(404);
+                return "{\"ok\":false,\"message\":\"No encontrado\"}";
             } catch (Exception ex) {
                 res.status(500);
                 return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
