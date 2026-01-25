@@ -379,6 +379,61 @@ public class Main {
             }
         });
 
+        // API: listar geocercas (opcional usuarioId)
+        get("/api/geocercas", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String uidS = req.queryParams("usuarioId");
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement(uidS == null ? "SELECT * FROM geocercas WHERE activo=1" : "SELECT * FROM geocercas WHERE activo=1 AND (usuario_id = ?)") ) {
+                if (uidS != null) ps.setInt(1, Integer.parseInt(uidS));
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    StringBuilder sb = new StringBuilder(); sb.append('[');
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) sb.append(','); first = false;
+                        int id = rs.getInt("id");
+                        String nombre = rs.getString("nombre");
+                        double lat = rs.getDouble("latitud");
+                        double lon = rs.getDouble("longitud");
+                        double radio = rs.getDouble("radio_m");
+                        int usuarioId = rs.getInt("usuario_id");
+                        sb.append(String.format("{\"id\":%d,\"nombre\":\"%s\",\"latitud\":%f,\"longitud\":%f,\"radio_m\":%f,\"usuario_id\":%d}", id, nombre==null?"":nombre.replace("\"","\\\""), lat, lon, radio, usuarioId));
+                    }
+                    sb.append(']');
+                    return sb.toString();
+                }
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
+        // API: listar límites de velocidad asignados (opcional vehiculoId)
+        get("/api/velocidades", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String vidS = req.queryParams("vehiculoId");
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement(vidS == null ? "SELECT * FROM velocidades_asignadas WHERE activo=1" : "SELECT * FROM velocidades_asignadas WHERE activo=1 AND vehiculo_id = ?")) {
+                if (vidS != null) ps.setInt(1, Integer.parseInt(vidS));
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    StringBuilder sb = new StringBuilder(); sb.append('[');
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) sb.append(','); first = false;
+                        int id = rs.getInt("id");
+                        int vid = rs.getInt("vehiculo_id");
+                        double vel = rs.getDouble("vel_max_kmh");
+                        sb.append(String.format("{\"id\":%d,\"vehiculo_id\":%d,\"vel_max_kmh\":%f}", id, vid, vel));
+                    }
+                    sb.append(']');
+                    return sb.toString();
+                }
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
         System.out.println("Servidor web iniciado en http://localhost:4567/ (archivos estáticos: 20_FrontEnd)");
     }
 }

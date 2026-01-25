@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <title>TrackVer A&A - Alertas</title>
   <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Small local styles to improve form appearance */
+    .alert-card { background: #fff; padding:16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+    .alert-card label { display:block; font-size:0.9rem; color:#333; margin-top:8px; }
+    .alert-card input, .alert-card select { width:100%; padding:8px 10px; margin-top:4px; box-sizing:border-box; border:1px solid #ccc; border-radius:4px; }
+    #alertForm { display:flex; gap:12px; align-items:end; flex-wrap:wrap; }
+    #alertForm .small { flex:0 0 120px; }
+    #alertForm .large { flex:1 1 320px; }
+    .consulta-tabla th { background:#0b5a9a; color:#fff; padding:8px; }
+  </style>
 </head>
 <body>
   <!-- Sección del encabezado con logo, título y navegación -->
@@ -32,65 +42,53 @@
   <!-- Área de contenido principal -->
   <main>
     <section style="max-width:1000px;margin:16px auto;padding:12px;">
-      <h2>Administrar Geocercas y Límites de Velocidad</h2>
+      <h2 style="margin-bottom:10px;">Alertas — Configuración</h2>
 
-      <div style="display:flex;gap:24px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:320px;">
-          <h3>Crear geocerca</h3>
-          <form id="formCrearGeocerca">
-            <label>Usuario ID (opcional):</label>
-            <input id="gcUsuarioId" placeholder="3">
-            <label>Nombre:</label>
-            <input id="gcNombre" placeholder="Nombre de la geocerca">
-            <label>Latitud:</label>
-            <input id="gcLat" type="number" step="any" placeholder="19.0">
-            <label>Longitud:</label>
-            <input id="gcLon" type="number" step="any" placeholder="-99.0">
-            <label>Radio (m):</label>
-            <input id="gcRadio" type="number" step="any" placeholder="50">
-            <button type="submit">Crear geocerca</button>
-          </form>
-          <div id="gcCrearResult" style="margin-top:8px;color:green"></div>
+      <div class="alert-card" style="margin-bottom:16px;">
+        <!-- Un único formulario que se adapta según tipo seleccionado -->
+        <form id="alertForm">
+          <div class="small">
+            <label for="tipoAlerta">Tipo de Alerta</label>
+            <select id="tipoAlerta">
+              <option value="geocerca">Geocerca</option>
+              <option value="velocidad">Velocidad</option>
+            </select>
+          </div>
+          <div class="large" id="formFields">
+            <div id="fieldsContainer"></div>
+          </div>
+          <div class="small">
+            <button type="submit" id="btnAlertSubmit">Guardar</button>
+          </div>
+        </form>
+      </div>
 
-          <hr>
-
-          <h3>Asignar geocerca a vehículo</h3>
-          <form id="formAsignarGeocerca">
-            <label>Geocerca ID:</label>
-            <input id="asgGeocercaId" placeholder="ID geocerca">
-            <label>Vehículo:</label>
-            <select id="asgVehiculoSelect"><option value="">Cargar vehículos</option></select>
-            <div style="margin-top:8px;"><button type="button" id="btnCargarVehiculos">Cargar vehículos</button>
-            <button type="submit">Asignar</button></div>
-          </form>
-          <div id="asgResult" style="margin-top:8px;color:green"></div>
+      <!-- Tablas lado a lado: geocercas (izquierda) | límites de velocidad (derecha) -->
+      <div style="display:flex;gap:16px;">
+        <div style="flex:1;min-width:300px;">
+          <div class="alert-card">
+            <h3 style="margin-top:0;">Geocercas configuradas</h3>
+            <table class="consulta-tabla" id="tableGeocercas">
+              <thead>
+                <tr><th>ID</th><th>Nombre</th><th>Latitud</th><th>Longitud</th><th>Radio(m)</th><th>Usuario</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
 
-        <div style="flex:1;min-width:320px;">
-          <h3>Asignar límite de velocidad</h3>
-          <form id="formVelocidad">
-            <label>Vehículo:</label>
-            <select id="velVehiculoSelect"><option value="">Cargar vehículos</option></select>
-            <label>Velocidad máxima (km/h):</label>
-            <input id="velMax" type="number" step="any" placeholder="50">
-            <div style="margin-top:8px;"><button type="button" id="btnCargarVehiculos2">Cargar vehículos</button>
-            <button type="submit">Asignar velocidad</button></div>
-          </form>
-          <div id="velResult" style="margin-top:8px;color:green"></div>
-
-          <hr>
-
-          <h3>Ver alertas por vehículo</h3>
-          <label>Vehículo:</label>
-          <select id="alertsVehSelect"><option value="">Cargar vehículos</option></select>
-          <div style="margin-top:8px;"><button id="btnVerAlertas">Ver alertas</button>
-          <button id="btnRefrescar">Refrescar</button></div>
-          <div id="alertsList" style="margin-top:12px"></div>
+        <div style="flex:1;min-width:300px;">
+          <div class="alert-card">
+            <h3 style="margin-top:0;">Límites de velocidad configurados</h3>
+            <table class="consulta-tabla" id="tableVelocidades">
+              <thead>
+                <tr><th>ID</th><th>Vehículo</th><th>Vel. máx (km/h)</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
-  <!-- Sección del pie de página -->
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>

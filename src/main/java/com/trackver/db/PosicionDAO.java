@@ -188,6 +188,8 @@ public class PosicionDAO {
             pstmt.setInt(1, usuarioId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
+                // Leer velocidad si existe (puede ser NULL)
+                Double vel = rs.getObject("velocidad") == null ? null : rs.getDouble("velocidad");
                 lista.add(new PosicionDTO(
                     rs.getInt("id"),
                     rs.getDouble("latitud"),
@@ -195,6 +197,7 @@ public class PosicionDAO {
                     rs.getString("fechaHora"),
                     rs.getInt("usuario_id"),
                     rs.getInt("vehiculo_id"),
+                    vel,
                     rs.getString("descripcion"),
                     rs.getString("estado")
                 ));
