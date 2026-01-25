@@ -456,3 +456,37 @@ header {
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 .modal-content h3 { margin-top: 0; color: var(--color-primario); }
+
+/* Botón de eliminar en tablas (centrado y estilo) */
+.btn-delete-vel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 30px;
+  padding: 0;
+  border-radius: 6px;
+  background: var(--color-alerta);
+  color: white;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.btn-delete-vel:hover { background: #990000; }
+
+/* Asegurar que la celda de acciones centre su contenido */
+td .btn-delete-vel, td .action-cell { display: flex; justify-content: center; align-items: center; }
+
+/* Forzar centrado en celdas de acción aunque haya estilos inline */
+td.action-cell { text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; }
+td.action-cell .btn-delete-vel { margin: 0 !important; }
+
+/* Modal form spacing and button styles */
+.modal-content { padding: 22px; }
+.modal-content .modal-form { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.modal-content .modal-form input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+.modal-content .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.btn-confirm { background: var(--color-primario); color: #fff; border: none; padding: 8px 12px; border-radius:6px; cursor:pointer; }
+.btn-confirm:hover { background: var(--color-secundario); }
+.btn-cancel { background: #f0f0f0; color:#333; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }

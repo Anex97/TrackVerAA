@@ -129,11 +129,11 @@ async function loadVehiculos() {
     tbody.innerHTML = '';
     for (const v of list) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.placas||'')}</td>` +
-           `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
-           `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
-           `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
-           `<td style="padding:8px;border-bottom:1px solid #eee;text-align:right;"><button type="button" data-delete-id="${v.id}" style="margin-left:8px;color:#c00;">Borrar</button></td>`;
+       tr.innerHTML = `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.placas||'')}</td>` +
+         `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
+         `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
+         `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
+         `<td class="action-cell" style="padding:8px;border-bottom:1px solid #eee;text-align:right;"><button class="btn-delete-vel" type="button" data-delete-id="${v.id}" title="Eliminar">&times;</button></td>`;
       tbody.appendChild(tr);
     }
   } catch (e) {
@@ -194,11 +194,11 @@ function _renderListToTable(list) {
   const frag = document.createDocumentFragment();
   for (const v of list) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.placas||'')}</td>` +
-         `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
-         `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
-         `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
-         `<td style="padding:8px;border-bottom:1px solid #eee;text-align:right;"><button type="button" data-delete-id="${v.id}" style="margin-left:8px;color:#c00;">Borrar</button></td>`;
+        tr.innerHTML = `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.placas||'')}</td>` +
+          `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.marca||'')}</td>` +
+          `<td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(v.modelo||'')}</td>` +
+          `<td style="padding:8px;border-bottom:1px solid #eee;">${v.anio||''}</td>` +
+          `<td class="action-cell" style="padding:8px;border-bottom:1px solid #eee;text-align:right;"><button class="btn-delete-vel" type="button" data-delete-id="${v.id}" title="Eliminar">&times;</button></td>`;
     frag.appendChild(tr);
   }
   // commit fragment

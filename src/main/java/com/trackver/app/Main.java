@@ -450,6 +450,29 @@ public class Main {
             }
         });
 
+        // API: listar asignaciones de geocercas a vehículos
+        get("/api/geocercas/asignaciones", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement("SELECT geocerca_id, vehiculo_id FROM geocerca_asignaciones")) {
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    StringBuilder sb = new StringBuilder(); sb.append('[');
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) sb.append(','); first = false;
+                        int gid = rs.getInt("geocerca_id");
+                        int vid = rs.getInt("vehiculo_id");
+                        sb.append(String.format("{\"geocerca_id\":%d,\"vehiculo_id\":%d}", gid, vid));
+                    }
+                    sb.append(']');
+                    return sb.toString();
+                }
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
         // API: listar límites de velocidad asignados (opcional vehiculoId)
         get("/api/velocidades", (req, res) -> {
             res.type("application/json; charset=UTF-8");
@@ -476,27 +499,91 @@ public class Main {
             }
         });
 
-        // API: eliminar/desactivar límite de velocidad (POST) - params: id (o JSON {"id":123})
+        // API: eliminar/desactivar límite de velocidad (POST) - params: id + usuarioId + password
         post("/api/velocidades/delete", (req, res) -> {
             res.type("application/json; charset=UTF-8");
             String idS = req.queryParams("id");
+            String uidS = req.queryParams("usuarioId");
+            String pass = req.queryParams("password");
             if ((idS == null || idS.isEmpty()) && req.body() != null && !req.body().trim().isEmpty()) {
-                // intentar extraer id de JSON simple
                 java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\\"id\\\"\\s*:\\s*\\\"?(\\d+)\\\"?").matcher(req.body());
                 if (m.find()) idS = m.group(1);
             }
-            if (idS == null || idS.isEmpty()) {
+            if (idS == null || idS.isEmpty() || uidS == null || uidS.isEmpty() || pass == null) {
                 res.status(400);
-                return "{\"ok\":false,\"message\":\"Falta id\"}";
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
             }
             int id = Integer.parseInt(idS);
-            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
-                 java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE velocidades_asignadas SET activo=0 WHERE id = ?")) {
-                ps.setInt(1, id);
-                int c = ps.executeUpdate();
-                if (c > 0) return "{\"ok\":true}";
-                res.status(404);
-                return "{\"ok\":false,\"message\":\"No encontrado\"}";
+            int uid = Integer.parseInt(uidS);
+            // verificar contraseña
+            boolean okAuth = com.trackver.db.UsuarioDAO.verificarPasswordPorId(uid, pass);
+            if (!okAuth) { res.status(401); return "{\"ok\":false,\"message\":\"Contraseña incorrecta\"}"; }
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas()) {
+                // obtener vehiculo asociado a la asignación
+                Integer vehId = null;
+                try (java.sql.PreparedStatement psGet = conn.prepareStatement("SELECT vehiculo_id FROM velocidades_asignadas WHERE id = ?")) {
+                    psGet.setInt(1, id);
+                    try (java.sql.ResultSet rs = psGet.executeQuery()) {
+                        if (rs.next()) vehId = rs.getInt("vehiculo_id");
+                        else { res.status(404); return "{\"ok\":false,\"message\":\"No encontrado\"}"; }
+                    }
+                }
+                // verificar que el vehículo pertenece al usuario
+                com.trackver.db.VehiculoDAO.VehiculoDTO v = com.trackver.db.VehiculoDAO.obtenerPorId(vehId);
+                if (v == null) { res.status(404); return "{\"ok\":false,\"message\":\"Vehículo no encontrado\"}"; }
+                if (v.usuarioId == null || v.usuarioId.intValue() != uid) { res.status(403); return "{\"ok\":false,\"message\":\"No autorizado\"}"; }
+
+                try (java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE velocidades_asignadas SET activo=0 WHERE id = ?")) {
+                    ps.setInt(1, id);
+                    int c = ps.executeUpdate();
+                    if (c > 0) return "{\"ok\":true}";
+                    res.status(404);
+                    return "{\"ok\":false,\"message\":\"No encontrado\"}";
+                }
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
+        // API: eliminar/desactivar geocerca (POST) - params: id + usuarioId + password
+        post("/api/geocercas/delete", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            String uidS = req.queryParams("usuarioId");
+            String pass = req.queryParams("password");
+            if ((idS == null || idS.isEmpty()) && req.body() != null && !req.body().trim().isEmpty()) {
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\\"id\\\"\\s*:\\s*\\\"?(\\d+)\\\"?").matcher(req.body());
+                if (m.find()) idS = m.group(1);
+            }
+            if (idS == null || idS.isEmpty() || uidS == null || uidS.isEmpty() || pass == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
+            }
+            int id = Integer.parseInt(idS);
+            int uid = Integer.parseInt(uidS);
+            // verificar contraseña
+            boolean okAuth = com.trackver.db.UsuarioDAO.verificarPasswordPorId(uid, pass);
+            if (!okAuth) { res.status(401); return "{\"ok\":false,\"message\":\"Contraseña incorrecta\"}"; }
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas()) {
+                // comprobar propietario si existe
+                Integer ownerId = null;
+                try (java.sql.PreparedStatement psGet = conn.prepareStatement("SELECT usuario_id FROM geocercas WHERE id = ?")) {
+                    psGet.setInt(1, id);
+                    try (java.sql.ResultSet rs = psGet.executeQuery()) {
+                        if (rs.next()) {
+                            ownerId = rs.getObject("usuario_id") == null ? null : rs.getInt("usuario_id");
+                        } else { res.status(404); return "{\"ok\":false,\"message\":\"No encontrado\"}"; }
+                    }
+                }
+                if (ownerId != null && ownerId.intValue() != uid) { res.status(403); return "{\"ok\":false,\"message\":\"No autorizado\"}"; }
+                try (java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE geocercas SET activo=0 WHERE id = ?")) {
+                    ps.setInt(1, id);
+                    int c = ps.executeUpdate();
+                    if (c > 0) return "{\"ok\":true}";
+                    res.status(404);
+                    return "{\"ok\":false,\"message\":\"No encontrado\"}";
+                }
             } catch (Exception ex) {
                 res.status(500);
                 return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
