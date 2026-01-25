@@ -154,24 +154,26 @@ header {
   margin: 40px auto;
 }
 
-/* Table container used in vehiculo.html to allow vertical scrolling */
+/* Table container to allow vertical scrolling (used by Consulta.html) */
 .table-container {
   width: 100%;
-  max-height: 340px; /* reduced to make vertical scroll more visible */
+  max-height: 360px; /* visible vertical scroll */
   overflow: auto;
 }
 
-/* Make table header sticky when scrolling */
-.table thead th {
+/* Make table header sticky when scrolling inside .table-container */
+.table-container thead th,
+.consulta-tabla thead th {
   position: sticky;
   top: 0;
-  background: #fff;
+  background: var(--color-primario);
+  color: white;
   z-index: 2;
 }
 
 /* Hover & pointer for sortable headers */
-.table thead th[data-sort] { color: var(--color-primario); }
-.table thead th[data-sort]:hover { text-decoration: underline; }
+.consulta-tabla thead th[data-sort] { cursor: pointer; color: #fff; opacity: 0.95; }
+.consulta-tabla thead th[data-sort]:hover { text-decoration: underline; opacity: 1; }
 
 /* Caja de la tabla */
 .tabla-contenedor {

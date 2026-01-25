@@ -48,68 +48,24 @@
         </div>
 
         <!-- Tabla -->
+        <div class="table-container">
         <table class="consulta-tabla" id="tablaRegistros">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Vehículo</th>
-              <th>Latitud</th>
-              <th>Longitud</th>
-              <th>Estado</th>
-              <th>Fecha</th>
+              <th data-sort="id">ID</th>
+              <th data-sort="vehiculo">Vehículo</th>
+              <th data-sort="latitud">Latitud</th>
+              <th data-sort="longitud">Longitud</th>
+              <th data-sort="estado">Estado</th>
+              <th data-sort="fecha">Fecha</th>
             </tr>
           </thead>
           <tbody>
-            <tr onclick="mostrarMapa(25.6866142, -100.3161139)">
-              <td>1</td>
-              <td>Volvo TR 430</td>
-              <td>25.6866142</td>
-              <td>-100.3161139</td>
-              <td>Nuevo León</td>
-              <td>2025-12-14 11:45</td>
-            </tr>
-            <tr onclick="mostrarMapa(25.7801265, -100.1887312)">
-              <td>2</td>
-              <td>Volvo TR 500</td>
-              <td>25.7801265</td>
-              <td>-100.1887312</td>
-              <td>Nuevo León</td>
-              <td>2025-12-14 10:30</td>
-            </tr>
-            <tr onclick="mostrarMapa(25.7260987, -100.3112456)">
-              <td>3</td>
-              <td>Kenworth T680</td>
-              <td>25.7260987</td>
-              <td>-100.3112456</td>
-              <td>Nuevo León</td>
-              <td>2025-12-13 18:20</td>
-            </tr>
-            <tr onclick="mostrarMapa(25.8321459, -100.2109874)">
-              <td>4</td>
-              <td>Freightliner Cascadia</td>
-              <td>25.8321459</td>
-              <td>-100.2109874</td>
-              <td>Nuevo León</td>
-              <td>2025-12-13 15:05</td>
-            </tr>
-            <tr onclick="mostrarMapa(25.6423156, -100.2896541)">
-              <td>5</td>
-              <td>Volvo FH16</td>
-              <td>25.6423156</td>
-              <td>-100.2896541</td>
-              <td>Nuevo León</td>
-              <td>2025-12-12 09:50</td>
-            </tr>
-            <tr onclick="mostrarMapa(20.6597, -103.3496)">
-              <td>6</td>
-              <td>Kenworth W900</td>
-              <td>20.6597</td>
-              <td>-103.3496</td>
-              <td>Jalisco</td>
-              <td>2025-12-14 14:00</td>
-            </tr>
+            <!-- filas generadas dinámicamente -->
           </tbody>
         </table>
+        </div>
+        <div id="msgNoLogin" style="color:#a00;margin-top:8px;"></div>
       </div>
 
       <!-- Mapa con Leaflet -->

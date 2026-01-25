@@ -184,8 +184,8 @@ public class Main {
                         marca = v.marca == null ? "" : v.marca.replace("\"", "\\\"");
                     }
                 }
-                return String.format("{\"id\":%d,\"latitud\":%f,\"longitud\":%f,\"fechaHora\":\"%s\",\"usuarioId\":%d,\"vehiculoId\":%d,\"vehiculoPlacas\":\"%s\",\"vehiculoMarca\":\"%s\"}",
-                        p.id, p.latitud, p.longitud, p.fechaHora.replace("\"", "\\\""), p.usuarioId, p.vehiculoId, placas, marca);
+                return String.format("{\"id\":%d,\"latitud\":%f,\"longitud\":%f,\"fechaHora\":\"%s\",\"usuarioId\":%d,\"vehiculoId\":%d,\"vehiculoPlacas\":\"%s\",\"vehiculoMarca\":\"%s\",\"descripcion\":\"%s\",\"estado\":\"%s\"}",
+                    p.id, p.latitud, p.longitud, p.fechaHora.replace("\"", "\\\""), p.usuarioId, p.vehiculoId, placas, marca, (p.descripcion==null?"":p.descripcion.replace("\"","\\\"")), (p.estado==null?"":p.estado.replace("\"","\\\"")));
         });
 
         // API: listar posiciones (usuarioId opcional). Si no se pasa usuarioId devuelve todas las posiciones
@@ -205,11 +205,36 @@ public class Main {
             for (com.trackver.db.PosicionDAO.PosicionDTO p : lista) {
                 if (!first) sb.append(',');
                 first = false;
-                sb.append(String.format("{\"id\":%d,\"latitud\":%f,\"longitud\":%f,\"fechaHora\":\"%s\",\"usuarioId\":%d,\"vehiculoId\":%d}",
-                    p.id, p.latitud, p.longitud, p.fechaHora.replace("\"", "\\\""), p.usuarioId, p.vehiculoId));
+                sb.append(String.format("{\"id\":%d,\"latitud\":%f,\"longitud\":%f,\"fechaHora\":\"%s\",\"usuarioId\":%d,\"vehiculoId\":%d,\"descripcion\":\"%s\",\"estado\":\"%s\"}",
+                    p.id, p.latitud, p.longitud, p.fechaHora.replace("\"", "\\\""), p.usuarioId, p.vehiculoId, (p.descripcion==null?"":p.descripcion.replace("\"","\\\"")), (p.estado==null?"":p.estado.replace("\"","\\\""))));
             }
             sb.append(']');
             return sb.toString();
+        });
+
+        // API: registrar una nueva posición (POST). Espera form-urlencoded: lat, lon, usuarioId, descripcion (opcional)
+        post("/api/posiciones", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String latS = req.queryParams("lat");
+            String lonS = req.queryParams("lon");
+            String uidS = req.queryParams("usuarioId");
+            String vehIdS = req.queryParams("vehiculoId");
+            String descripcion = req.queryParams("descripcion");
+            if (latS == null || lonS == null || uidS == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
+            }
+            double lat = Double.parseDouble(latS);
+            double lon = Double.parseDouble(lonS);
+            int uid = Integer.parseInt(uidS);
+            Integer vehId = null;
+            if (vehIdS != null && !vehIdS.isEmpty()) {
+                try { vehId = Integer.parseInt(vehIdS); } catch (NumberFormatException n) { vehId = null; }
+            }
+            boolean ok = com.trackver.db.PosicionDAO.registrarPosicion(lat, lon, uid, vehId, descripcion);
+            if (ok) return "{\"ok\":true}";
+            res.status(500);
+            return "{\"ok\":false,\"message\":\"No se pudo registrar posición\"}";
         });
 
         // Ruta simple para verificar servidor
@@ -218,6 +243,12 @@ public class Main {
         // Redirigir raíz al HTML de login
         get("/", (req, res) -> {
             res.redirect("/10_HTML/Index.html");
+            return null;
+        });
+
+        // Soporte para peticiones directas a /Panel.html (algunos enlaces usan ruta relativa)
+        get("/Panel.html", (req, res) -> {
+            res.redirect("/10_HTML/Panel.html");
             return null;
         });
 

@@ -27,7 +27,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
       // Guardar usuario en localStorage para uso en panel
       localStorage.setItem('usuario', JSON.stringify({ id: data.id, nombre: data.nombre, nivelAcceso: data.nivelAcceso }));
       alert('Login exitoso. Bienvenido ' + (data.nombre || ''));
-      window.location.href = 'Panel.html';
+      window.location.href = '/10_HTML/Panel.html';
     } else if (resp.status === 401) {
       alert('Usuario o contraseña incorrectos.');
     } else {
