@@ -357,10 +357,10 @@ async function cargarGeocercas() {
         return v ? ((v.modelo?v.modelo+' - ':'') + (v.placas||'')) : ('id:'+id);
       }).join(', ');
       const ownerLabel = vehLabels || (g.usuario_id ? ('usuario:'+g.usuario_id) : '');
-      return `<tr data-id="${g.id}"><td>${g.id}</td><td>${g.nombre}</td><td>${g.latitud}</td><td>${g.longitud}</td><td>${g.radio_m}</td><td>${ownerLabel}</td><td class="action-cell"><button class="btn-delete-vel" data-id="${g.id}" title="Eliminar">&times;</button></td></tr>`;
+      return `<tr data-id="${g.id}"><td>${g.id}</td><td>${g.nombre}</td><td>${g.latitud}</td><td>${g.longitud}</td><td>${g.radio_m}</td><td>${ownerLabel}</td><td class="action-cell"><button class="btn-delete-vel icon-dismiss" data-id="${g.id}" title="Eliminar" aria-label="Eliminar">&times;</button></td></tr>`;
     }).join('');
     // attach delete handlers for geocercas (with password confirmation)
-    document.querySelectorAll('#tableGeocercas .btn-delete-vel').forEach(b => b.addEventListener('click', async (e) => {
+    document.querySelectorAll('#tableGeocercas .btn-delete-vel, #tableGeocercas .icon-dismiss').forEach(b => b.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
       // pedir contraseña (y usuario si no está logueado)
       const cred = await showPasswordModal();
@@ -402,10 +402,10 @@ async function cargarVelocidades() {
     tbody.innerHTML = list.map(v => {
       const veh = byId[v.vehiculo_id];
       const vehLabel = veh ? ((veh.modelo?veh.modelo+' - ':'') + (veh.placas||'')) : ('id:'+v.vehiculo_id);
-      return `<tr data-id="${v.id}"><td>${v.id}</td><td>${vehLabel}</td><td>${Math.round(v.vel_max_kmh)}</td><td class="action-cell"><button class="btn-delete-vel" data-id="${v.id}" title="Eliminar">&times;</button></td></tr>`;
+      return `<tr data-id="${v.id}"><td>${v.id}</td><td>${vehLabel}</td><td>${Math.round(v.vel_max_kmh)}</td><td class="action-cell"><button class="btn-delete-vel icon-dismiss" data-id="${v.id}" title="Eliminar" aria-label="Eliminar">&times;</button></td></tr>`;
     }).join('');
     // attach handlers (require password confirmation)
-    document.querySelectorAll('.btn-delete-vel').forEach(b => b.addEventListener('click', async (e) => {
+    document.querySelectorAll('#tableVelocidades .btn-delete-vel, #tableVelocidades .icon-dismiss').forEach(b => b.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
       const cred = await showPasswordModal();
       if (!cred) return;

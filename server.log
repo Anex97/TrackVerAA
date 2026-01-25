@@ -6,8 +6,6 @@ Tabla 'alertas' lista en alertas.db
 Tabla 'geocercas' lista en alertas.db
 Tabla 'geocerca_asignaciones' lista en alertas.db
 Tabla 'velocidades_asignadas' lista en alertas.db
-Columna 'correo_enviado' añadida a tabla alertas
-Columna 'sms_enviado' añadida a tabla alertas
 Usuarios iniciales insertados en usuarios.db
 Auditorías iniciales insertadas en auditorias.db
 Migración de estado/descripcion completada.

@@ -475,6 +475,66 @@ header {
 }
 .btn-delete-vel:hover { background: #990000; }
 
+/* Icon button used for marcar correo/sms */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  padding: 4px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-primario);
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+.icon-btn:hover { background: rgba(0,0,0,0.04); }
+.icon-btn.loading { opacity: 0.6; }
+.icon-btn.done { background: rgba(46,125,50,0.12); border-color: rgba(46,125,50,0.25); color: #2e7d32; }
+.icon-btn svg { display: block; }
+
+/* Slight spacing between icon buttons and dismiss */
+.action-cell .icon-btn { margin: 0 6px; }
+
+/* Icon dismiss (small red X) */
+.icon-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  padding: 0;
+  border-radius: 6px;
+  background: var(--color-alerta);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.icon-dismiss:hover { background: #990000; }
+.icon-dismiss:disabled { opacity: 0.6; cursor: default; }
+
+/* Ensure icon buttons inside .alertas (Panel) are not styled by generic .alertas button rules */
+.alertas .icon-btn {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.06);
+  color: var(--color-primario);
+  box-shadow: none;
+}
+
+/* Ensure explicit override for hover when inside alertas */
+.alertas .icon-btn:hover { background: rgba(0,0,0,0.04); }
+
+/* Make the icon buttons visually stand out (light background) so SVG shows clearly */
+.alertas .icon-btn { background: #ffffff; border-radius:6px; }
+.alertas .icon-btn:hover { background: #fbfbfb; }
+
+/* Image inside icon button */
+.icon-img { width: 18px; height: 18px; display: block; }
+.alertas .icon-btn .icon-img { width: 20px; height: 20px; }
+
 /* Asegurar que la celda de acciones centre su contenido */
 td .btn-delete-vel, td .action-cell { display: flex; justify-content: center; align-items: center; }
 

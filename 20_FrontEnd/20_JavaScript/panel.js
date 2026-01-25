@@ -93,25 +93,58 @@ async function cargarTodasAlertas() {
       const correo = (a.correo_enviado && Number(a.correo_enviado)) ? 'Sí' : 'No';
       const sms = (a.sms_enviado && Number(a.sms_enviado)) ? 'Sí' : 'No';
       const vehLabel = vehMap[a.vehiculo_id] || ('id:'+a.vehiculo_id);
-      return `<tr data-id="${a.id}"><td>${a.id}</td><td>${vehLabel}</td><td>${a.tipo||''}</td><td>${a.descripcion||''}</td><td>${a.fecha||''}</td><td>${correo}</td><td>${sms}</td><td class="action-cell"><button class="btn-mark-correo" data-id="${a.id}">Marcar correo</button> <button class="btn-mark-sms" data-id="${a.id}">Marcar SMS</button> <button class="btn-dismiss" data-id="${a.id}">Desestimar</button></td></tr>`;
+      // use external SVG files for icons (button wraps img for accessibility)
+      const iconCorreo = `<button class="icon-btn icon-correo" data-id="${a.id}" title="Marcar correo" aria-label="Marcar correo">`+
+             `<img src="/img/envelope-check.svg" class="icon-img" alt="correo"/>`+
+             `</button>`;
+      const iconSms = `<button class="icon-btn icon-sms" data-id="${a.id}" title="Marcar SMS" aria-label="Marcar SMS">`+
+              `<img src="/img/sms-check.svg" class="icon-img" alt="sms"/>`+
+              `</button>`;
+
+      return `<tr data-id="${a.id}"><td>${a.id}</td><td>${vehLabel}</td><td>${a.tipo||''}</td><td>${a.descripcion||''}</td><td>${a.fecha||''}</td><td class="col-correo">${correo}</td><td class="col-sms">${sms}</td><td class="action-cell">${iconCorreo} ${iconSms} <button class="btn-dismiss icon-dismiss" data-id="${a.id}" aria-label="Desestimar">×</button></td></tr>`;
     }).join('');
 
     // attach handlers
-    document.querySelectorAll('.btn-mark-correo').forEach(b => b.addEventListener('click', async (e) => {
+    // icon button handlers: update only the affected row on success
+    document.querySelectorAll('.icon-correo').forEach(b => b.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.classList.add('loading');
       try {
         const resp = await fetch('/api/alertas/mark?id=' + encodeURIComponent(id) + '&correo=1', { method: 'POST' });
-        if (resp.ok) { await cargarTodasAlertas(); return; }
+        if (resp.ok) {
+          // update row cell
+          const tr = document.querySelector('tr[data-id="' + id + '"]');
+          if (tr) {
+            const cell = tr.querySelector('.col-correo'); if (cell) cell.textContent = 'Sí';
+            btn.classList.add('done');
+          }
+          btn.disabled = true;
+          return;
+        }
         alert('Error marcando correo');
       } catch (ex) { alert('Error conectando'); }
+      btn.disabled = false; btn.classList.remove('loading');
     }));
-    document.querySelectorAll('.btn-mark-sms').forEach(b => b.addEventListener('click', async (e) => {
+
+    document.querySelectorAll('.icon-sms').forEach(b => b.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.classList.add('loading');
       try {
         const resp = await fetch('/api/alertas/mark?id=' + encodeURIComponent(id) + '&sms=1', { method: 'POST' });
-        if (resp.ok) { await cargarTodasAlertas(); return; }
+        if (resp.ok) {
+          const tr = document.querySelector('tr[data-id="' + id + '"]');
+          if (tr) {
+            const cell = tr.querySelector('.col-sms'); if (cell) cell.textContent = 'Sí';
+            btn.classList.add('done');
+          }
+          btn.disabled = true;
+          return;
+        }
         alert('Error marcando SMS');
       } catch (ex) { alert('Error conectando'); }
+      btn.disabled = false; btn.classList.remove('loading');
     }));
     document.querySelectorAll('.btn-dismiss').forEach(b => b.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
