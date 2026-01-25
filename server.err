@@ -1,29 +1,11 @@
 [main] INFO spark.staticfiles.StaticFilesConfiguration - External StaticResourceHandler configured with folder = c:/Repos/TrackVerAA/20_FrontEnd
-[Thread-0] INFO org.eclipse.jetty.util.log - Logging initialized @767ms to org.eclipse.jetty.util.log.Slf4jLog
+[Thread-0] INFO org.eclipse.jetty.util.log - Logging initialized @867ms to org.eclipse.jetty.util.log.Slf4jLog
 [Thread-0] INFO spark.embeddedserver.jetty.EmbeddedJettyServer - == Spark has ignited ...
 [Thread-0] INFO spark.embeddedserver.jetty.EmbeddedJettyServer - >> Listening on 0.0.0.0:4567
 [Thread-0] INFO org.eclipse.jetty.server.Server - jetty-9.4.48.v20220622; built: 2022-06-21T20:42:25.880Z; git: 6b67c5719d1f4371b33655ff2d047d24e171e49a; jvm 17.0.12+8-LTS-286
 [Thread-0] INFO org.eclipse.jetty.server.session - DefaultSessionIdManager workerName=node0
 [Thread-0] INFO org.eclipse.jetty.server.session - No SessionScavenger set, using defaults
 [Thread-0] INFO org.eclipse.jetty.server.session - node0 Scavenging every 660000ms
-[Thread-0] INFO org.eclipse.jetty.server.AbstractConnector - Started ServerConnector@5c49dab0{HTTP/1.1, (http/1.1)}{0.0.0.0:4567}
-[Thread-0] INFO org.eclipse.jetty.server.Server - Started @902ms
-[qtp112272251-28] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-29] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-21] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-20] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-25] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-21] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-20] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-21] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-20] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-28] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-25] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-20] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-28] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-21] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-28] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-28] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-19] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-18] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
-[qtp112272251-28] INFO spark.http.matching.MatcherFilter - The requested route [/.well-known/appspecific/com.chrome.devtools.json] has not been mapped in Spark for Accept: [null]
+[Thread-0] INFO org.eclipse.jetty.server.AbstractConnector - Started ServerConnector@5db33950{HTTP/1.1, (http/1.1)}{0.0.0.0:4567}
+[Thread-0] INFO org.eclipse.jetty.server.Server - Started @1018ms
+[qtp1937916774-18] INFO spark.http.matching.MatcherFilter - The requested route [/favicon.ico] has not been mapped in Spark for Accept: [image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8]
