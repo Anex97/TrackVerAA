@@ -42,6 +42,7 @@
         <p><strong>Latitud:</strong> <span id="previewLat">-</span></p>
         <p><strong>Longitud:</strong> <span id="previewLon">-</span></p>
         <p><strong>Descripción:</strong> <span id="previewDesc">-</span></p>
+        <p><strong>Velocidad:</strong> <span id="previewVel">-</span></p>
       </div>
 
       <!-- Formulario de registro -->
@@ -60,6 +61,9 @@
 
         <label for="descripcion">Descripción:</label>
         <textarea id="descripcion" placeholder="Detalles del punto" required></textarea>
+
+        <label for="velocidad">Velocidad (km/h) — opcional:</label>
+        <input type="number" step="any" id="velocidad" placeholder="Ej. 60">
 
         <button type="submit">Guardar</button>
       </form>

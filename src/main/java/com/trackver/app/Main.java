@@ -220,6 +220,11 @@ public class Main {
             String uidS = req.queryParams("usuarioId");
             String vehIdS = req.queryParams("vehiculoId");
             String descripcion = req.queryParams("descripcion");
+            String velS = req.queryParams("velocidad");
+            Double velocidad = null;
+            if (velS != null && !velS.isEmpty()) {
+                try { velocidad = Double.parseDouble(velS); } catch (Exception e) { velocidad = null; }
+            }
             if (latS == null || lonS == null || uidS == null) {
                 res.status(400);
                 return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
@@ -231,10 +236,102 @@ public class Main {
             if (vehIdS != null && !vehIdS.isEmpty()) {
                 try { vehId = Integer.parseInt(vehIdS); } catch (NumberFormatException n) { vehId = null; }
             }
-            boolean ok = com.trackver.db.PosicionDAO.registrarPosicion(lat, lon, uid, vehId, descripcion);
+            boolean ok = com.trackver.db.PosicionDAO.registrarPosicion(lat, lon, uid, vehId, descripcion, velocidad);
             if (ok) return "{\"ok\":true}";
             res.status(500);
             return "{\"ok\":false,\"message\":\"No se pudo registrar posición\"}";
+        });
+
+        // API: crear geocerca (POST) - params: nombre, usuarioId (opcional), lat, lon, radio_m
+        post("/api/geocercas", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String nombre = req.queryParams("nombre");
+            String latS = req.queryParams("lat");
+            String lonS = req.queryParams("lon");
+            String radioS = req.queryParams("radio_m");
+            String uidS = req.queryParams("usuarioId");
+            if (latS == null || lonS == null || radioS == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
+            }
+            double lat = Double.parseDouble(latS);
+            double lon = Double.parseDouble(lonS);
+            double radio = Double.parseDouble(radioS);
+            Integer usuarioId = null;
+            if (uidS != null && !uidS.isEmpty()) {
+                try { usuarioId = Integer.parseInt(uidS); } catch (Exception e) { usuarioId = null; }
+            }
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement("INSERT INTO geocercas (nombre, usuario_id, latitud, longitud, radio_m, activo) VALUES (?, ?, ?, ?, ?, 1)", java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, nombre == null ? "" : nombre);
+                if (usuarioId == null) ps.setNull(2, java.sql.Types.INTEGER); else ps.setInt(2, usuarioId);
+                ps.setDouble(3, lat);
+                ps.setDouble(4, lon);
+                ps.setDouble(5, radio);
+                ps.executeUpdate();
+                try (java.sql.ResultSet rk = ps.getGeneratedKeys()) {
+                    if (rk.next()) {
+                        int id = rk.getInt(1);
+                        return String.format("{\"ok\":true,\"id\":%d}", id);
+                    }
+                }
+                return "{\"ok\":false}";
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
+        // API: asignar geocerca a vehículo (POST) - params: geocercaId, vehiculoId
+        post("/api/geocercas/asignar", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String gidS = req.queryParams("geocercaId");
+            String vidS = req.queryParams("vehiculoId");
+            if (gidS == null || vidS == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
+            }
+            int gid = Integer.parseInt(gidS);
+            int vid = Integer.parseInt(vidS);
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement("INSERT INTO geocerca_asignaciones (geocerca_id, vehiculo_id) VALUES (?, ?)", java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, gid);
+                ps.setInt(2, vid);
+                ps.executeUpdate();
+                return "{\"ok\":true}";
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
+        });
+
+        // API: asignar límite de velocidad a vehículo (POST) - params: vehiculoId, vel_max_kmh
+        post("/api/velocidades", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String vidS = req.queryParams("vehiculoId");
+            String velS = req.queryParams("vel_max_kmh");
+            if (vidS == null || velS == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
+            }
+            int vid = Integer.parseInt(vidS);
+            double vel = Double.parseDouble(velS);
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement("INSERT INTO velocidades_asignadas (vehiculo_id, vel_max_kmh, activo) VALUES (?, ?, 1)", java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, vid);
+                ps.setDouble(2, vel);
+                ps.executeUpdate();
+                try (java.sql.ResultSet rk = ps.getGeneratedKeys()) {
+                    if (rk.next()) {
+                        int id = rk.getInt(1);
+                        return String.format("{\"ok\":true,\"id\":%d}", id);
+                    }
+                }
+                return "{\"ok\":false}";
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
         });
 
         // Ruta simple para verificar servidor
@@ -250,6 +347,36 @@ public class Main {
         get("/Panel.html", (req, res) -> {
             res.redirect("/10_HTML/Panel.html");
             return null;
+        });
+
+        // API: listar alertas (opcional vehiculoId)
+        get("/api/alertas", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String vidS = req.queryParams("vehiculoId");
+            try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
+                 java.sql.PreparedStatement ps = conn.prepareStatement(vidS == null ? "SELECT * FROM alertas ORDER BY fecha DESC" : "SELECT * FROM alertas WHERE vehiculo_id = ? ORDER BY fecha DESC")) {
+                if (vidS != null) ps.setInt(1, Integer.parseInt(vidS));
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append('[');
+                    boolean first = true;
+                    while (rs.next()) {
+                        if (!first) sb.append(','); first = false;
+                        int id = rs.getInt("id");
+                        int vid = rs.getInt("vehiculo_id");
+                        String tipo = rs.getString("tipo");
+                        String desc = rs.getString("descripcion");
+                        String fecha = rs.getString("fecha");
+                        String estado = rs.getString("estado");
+                        sb.append(String.format("{\"id\":%d,\"vehiculo_id\":%d,\"tipo\":\"%s\",\"descripcion\":\"%s\",\"fecha\":\"%s\",\"estado\":\"%s\"}", id, vid, tipo == null ? "" : tipo.replace("\"","\\\""), desc == null ? "" : desc.replace("\"","\\\""), fecha == null ? "" : fecha.replace("\"","\\\""), estado == null ? "" : estado.replace("\"","\\\"")));
+                    }
+                    sb.append(']');
+                    return sb.toString();
+                }
+            } catch (Exception ex) {
+                res.status(500);
+                return String.format("{\"ok\":false,\"message\":\"%s\"}", ex.getMessage().replace("\"","\\\""));
+            }
         });
 
         System.out.println("Servidor web iniciado en http://localhost:4567/ (archivos estáticos: 20_FrontEnd)");

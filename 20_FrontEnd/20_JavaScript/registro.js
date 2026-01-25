@@ -80,6 +80,8 @@ function actualizarVistaPrevia() {
   document.getElementById('previewLat').textContent = document.getElementById('latitud').value || '-';
   document.getElementById('previewLon').textContent = document.getElementById('longitud').value || '-';
   document.getElementById('previewDesc').textContent = document.getElementById('descripcion').value || '-';
+  const velEl = document.getElementById('velocidad');
+  document.getElementById('previewVel').textContent = (velEl && velEl.value) ? (velEl.value + ' km/h') : '-';
 }
 
 // Actualizar vista previa en tiempo real
@@ -94,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('latitud').addEventListener('input', actualizarVistaPrevia);
 document.getElementById('longitud').addEventListener('input', actualizarVistaPrevia);
 document.getElementById('descripcion').addEventListener('input', actualizarVistaPrevia);
+document.getElementById('velocidad').addEventListener('input', actualizarVistaPrevia);
 
 document.getElementById('registroForm').addEventListener('submit', function(event) {
   event.preventDefault();
@@ -138,6 +141,8 @@ document.getElementById('registroForm').addEventListener('submit', function(even
       body.append('lon', String(lon));
       body.append('usuarioId', String(usuario.id));
       body.append('descripcion', desc);
+      const velVal = document.getElementById('velocidad').value;
+      if (velVal && !isNaN(parseFloat(velVal))) body.append('velocidad', String(parseFloat(velVal)));
       if (vehiculoId) body.append('vehiculoId', String(vehiculoId));
       else if (vehiculo) body.append('vehiculoPlacas', vehiculo);
 

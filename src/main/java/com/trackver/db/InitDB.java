@@ -60,6 +60,39 @@ public class InitDB {
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("Tabla 'alertas' lista en alertas.db");
+            // Tablas adicionales para geocercas y límites de velocidad
+            try {
+                stmt.execute("CREATE TABLE IF NOT EXISTS geocercas (" +
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             "nombre TEXT, " +
+                             "usuario_id INTEGER, " +
+                             "latitud REAL, " +
+                             "longitud REAL, " +
+                             "radio_m REAL, " +
+                             "activo INTEGER DEFAULT 1)");
+                System.out.println("Tabla 'geocercas' lista en alertas.db");
+            } catch (Exception ex) {
+                System.out.println("No se pudo crear tabla geocercas: " + ex.getMessage());
+            }
+            try {
+                stmt.execute("CREATE TABLE IF NOT EXISTS geocerca_asignaciones (" +
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             "geocerca_id INTEGER, " +
+                             "vehiculo_id INTEGER)");
+                System.out.println("Tabla 'geocerca_asignaciones' lista en alertas.db");
+            } catch (Exception ex) {
+                System.out.println("No se pudo crear tabla geocerca_asignaciones: " + ex.getMessage());
+            }
+            try {
+                stmt.execute("CREATE TABLE IF NOT EXISTS velocidades_asignadas (" +
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             "vehiculo_id INTEGER, " +
+                             "vel_max_kmh REAL, " +
+                             "activo INTEGER DEFAULT 1)");
+                System.out.println("Tabla 'velocidades_asignadas' lista en alertas.db");
+            } catch (Exception ex) {
+                System.out.println("No se pudo crear tabla velocidades_asignadas: " + ex.getMessage());
+            }
         } catch (Exception e) {
             System.out.println("Error creando tabla alertas: " + e.getMessage());
         }
@@ -176,6 +209,24 @@ public class InitDB {
                         }
                     } catch (Exception ex) {
                         System.out.println("Error comprobando columna estado: " + ex.getMessage());
+                    }
+                    // Asegurar columna velocidad (km/h)
+                    try (ResultSet rs4 = stmt.executeQuery("PRAGMA table_info('posiciones')")) {
+                        boolean tieneVel = false;
+                        while (rs4.next()) {
+                            String col = rs4.getString("name");
+                            if ("velocidad".equalsIgnoreCase(col)) { tieneVel = true; break; }
+                        }
+                        if (!tieneVel) {
+                            try (Statement s5 = conn.createStatement()) {
+                                s5.execute("ALTER TABLE posiciones ADD COLUMN velocidad REAL");
+                                System.out.println("Columna 'velocidad' añadida a tabla posiciones");
+                            } catch (Exception ex) {
+                                System.out.println("No se pudo añadir columna velocidad: " + ex.getMessage());
+                            }
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Error comprobando columna velocidad: " + ex.getMessage());
                     }
             }
 

@@ -31,52 +31,63 @@
 
   <!-- Área de contenido principal -->
   <main>
-    <!-- Sección de historial de alertas -->
-    <section class="alertas">
-      <h2>Historial de Alertas</h2>
+    <section style="max-width:1000px;margin:16px auto;padding:12px;">
+      <h2>Administrar Geocercas y Límites de Velocidad</h2>
 
-      <!-- Controles de filtrado -->
-      <div class="filtros">
-        <input type="text" id="filtroVehiculo" placeholder="Buscar por vehículo">
-        <input type="text" id="filtroTipo" placeholder="Buscar por tipo de alerta">
-        <input type="date" id="fechaInicio">
-        <input type="date" id="fechaFin">
-        <button type="button" onclick="filtrarAlertas()">Filtrar</button>
-        <button type="button" onclick="mostrarTodas()">Mostrar todas</button>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:320px;">
+          <h3>Crear geocerca</h3>
+          <form id="formCrearGeocerca">
+            <label>Usuario ID (opcional):</label>
+            <input id="gcUsuarioId" placeholder="3">
+            <label>Nombre:</label>
+            <input id="gcNombre" placeholder="Nombre de la geocerca">
+            <label>Latitud:</label>
+            <input id="gcLat" type="number" step="any" placeholder="19.0">
+            <label>Longitud:</label>
+            <input id="gcLon" type="number" step="any" placeholder="-99.0">
+            <label>Radio (m):</label>
+            <input id="gcRadio" type="number" step="any" placeholder="50">
+            <button type="submit">Crear geocerca</button>
+          </form>
+          <div id="gcCrearResult" style="margin-top:8px;color:green"></div>
+
+          <hr>
+
+          <h3>Asignar geocerca a vehículo</h3>
+          <form id="formAsignarGeocerca">
+            <label>Geocerca ID:</label>
+            <input id="asgGeocercaId" placeholder="ID geocerca">
+            <label>Vehículo:</label>
+            <select id="asgVehiculoSelect"><option value="">Cargar vehículos</option></select>
+            <div style="margin-top:8px;"><button type="button" id="btnCargarVehiculos">Cargar vehículos</button>
+            <button type="submit">Asignar</button></div>
+          </form>
+          <div id="asgResult" style="margin-top:8px;color:green"></div>
+        </div>
+
+        <div style="flex:1;min-width:320px;">
+          <h3>Asignar límite de velocidad</h3>
+          <form id="formVelocidad">
+            <label>Vehículo:</label>
+            <select id="velVehiculoSelect"><option value="">Cargar vehículos</option></select>
+            <label>Velocidad máxima (km/h):</label>
+            <input id="velMax" type="number" step="any" placeholder="50">
+            <div style="margin-top:8px;"><button type="button" id="btnCargarVehiculos2">Cargar vehículos</button>
+            <button type="submit">Asignar velocidad</button></div>
+          </form>
+          <div id="velResult" style="margin-top:8px;color:green"></div>
+
+          <hr>
+
+          <h3>Ver alertas por vehículo</h3>
+          <label>Vehículo:</label>
+          <select id="alertsVehSelect"><option value="">Cargar vehículos</option></select>
+          <div style="margin-top:8px;"><button id="btnVerAlertas">Ver alertas</button>
+          <button id="btnRefrescar">Refrescar</button></div>
+          <div id="alertsList" style="margin-top:12px"></div>
+        </div>
       </div>
-
-      <!-- Tabla de alertas -->
-      <table class="consulta-tabla">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Vehículo</th>
-            <th>Tipo de Alerta</th>
-            <th>Descripción</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Ejemplo de datos estáticos -->
-          <tr>
-            <td>1</td>
-            <td>Volvo TR 430</td>
-            <td>Velocidad</td>
-            <td>Exceso de velocidad detectado</td>
-            <td>14/12/2025 11:45</td>
-            <td>Pendiente</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Volvo TR 500</td>
-            <td>Zona restringida</td>
-            <td>Entrada a zona no autorizada</td>
-            <td>14/12/2025 10:30</td>
-            <td>Atendida</td>
-          </tr>
-        </tbody>
-      </table>
     </section>
   </main>
   <!-- Sección del pie de página -->
