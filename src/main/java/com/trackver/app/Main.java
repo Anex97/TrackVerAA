@@ -61,6 +61,104 @@ public class Main {
             return String.format("{\"count\":%d}", count);
         });
 
+        // API: listar vehículos (usuarioId opcional)
+        get("/api/vehiculos", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String uid = req.queryParams("usuarioId");
+            java.util.List<com.trackver.db.VehiculoDAO.VehiculoDTO> lista = com.trackver.db.VehiculoDAO.listarVehiculos();
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            boolean first = true;
+            for (com.trackver.db.VehiculoDAO.VehiculoDTO v : lista) {
+                if (uid != null) {
+                    try {
+                        int uidInt = Integer.parseInt(uid);
+                        if (v.usuarioId == null || v.usuarioId.intValue() != uidInt) continue;
+                    } catch (NumberFormatException nfe) {
+                        // ignore filter if invalid
+                    }
+                }
+                if (!first) sb.append(',');
+                first = false;
+                String marca = v.marca == null ? "" : v.marca.replace("\"", "\\\"");
+                String modelo = v.modelo == null ? "" : v.modelo.replace("\"", "\\\"");
+                String placas = v.placas == null ? "" : v.placas.replace("\"", "\\\"");
+                String usuarioIdJson = v.usuarioId == null ? "null" : String.valueOf(v.usuarioId);
+                sb.append(String.format("{\"id\":%d,\"marca\":\"%s\",\"modelo\":\"%s\",\"placas\":\"%s\",\"anio\":%d,\"usuarioId\":%s}",
+                    v.id, marca, modelo, placas, v.anio, usuarioIdJson));
+            }
+            sb.append(']');
+            return sb.toString();
+        });
+
+        // API: eliminar vehículo (requiere id, usuarioId y contraseña para confirmar)
+        post("/api/vehiculos/delete", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            String uidS = req.queryParams("usuarioId");
+            String pass = req.queryParams("password");
+            if (idS == null || uidS == null || pass == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan parámetros\"}";
+            }
+            int id = Integer.parseInt(idS);
+            int uid = Integer.parseInt(uidS);
+            // verificar contraseña
+            boolean ok = com.trackver.db.UsuarioDAO.verificarPasswordPorId(uid, pass);
+            if (!ok) {
+                res.status(401);
+                return "{\"ok\":false,\"message\":\"Contraseña incorrecta\"}";
+            }
+            // verificar que el vehículo pertenece al usuario
+            com.trackver.db.VehiculoDAO.VehiculoDTO v = com.trackver.db.VehiculoDAO.obtenerPorId(id);
+            if (v == null) {
+                res.status(404);
+                return "{\"ok\":false,\"message\":\"Vehículo no encontrado\"}";
+            }
+            if (v.usuarioId == null || v.usuarioId.intValue() != uid) {
+                res.status(403);
+                return "{\"ok\":false,\"message\":\"No autorizado\"}";
+            }
+            boolean deleted = com.trackver.db.VehiculoDAO.eliminarVehiculo(id);
+            if (deleted) return "{\"ok\":true}";
+            res.status(500);
+            return "{\"ok\":false,\"message\":\"No se pudo eliminar\"}";
+        });
+
+        // API: crear vehículo (asociado al usuario logueado)
+        post("/api/vehiculos", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String marca = req.queryParams("marca");
+            String modelo = req.queryParams("modelo");
+            String placas = req.queryParams("placas");
+            String anioS = req.queryParams("anio");
+            String uid = req.queryParams("usuarioId");
+            if (marca == null || placas == null || anioS == null || uid == null) {
+                res.status(400);
+                return "{\"ok\":false,\"error\":\"missing_fields\",\"message\":\"Faltan campos requeridos\"}";
+            }
+            int anio = Integer.parseInt(anioS);
+            int usuarioId = Integer.parseInt(uid);
+            try {
+                int newId = com.trackver.db.VehiculoDAO.crearVehiculoConUsuario(marca, modelo == null ? "" : modelo, placas, anio, usuarioId);
+                if (newId > 0) {
+                    return String.format("{\"ok\":true,\"id\":%d}", newId);
+                } else {
+                    res.status(500);
+                    return "{\"ok\":false,\"error\":\"insert_failed\",\"message\":\"No se pudo crear el vehículo\"}";
+                }
+            } catch (Exception e) {
+                String msg = e.getMessage() == null ? "" : e.getMessage();
+                if (msg.contains("UNIQUE constraint failed") || msg.contains("vehiculos.placas")) {
+                    res.status(409);
+                    return "{\"ok\":false,\"error\":\"duplicate_placas\",\"message\":\"Placas ya registradas\"}";
+                }
+                res.status(500);
+                return String.format("{\"ok\":false,\"error\":\"%s\",\"message\":\"%s\"}",
+                        e.getClass().getSimpleName(), msg.replace("\"", "\\\""));
+            }
+        });
+
         // API: ultima posicion (por usuarioId opcional). Si no se pasa usuarioId devuelve la última global
         get("/api/posiciones/ultima", (req, res) -> {
             res.type("application/json; charset=UTF-8");

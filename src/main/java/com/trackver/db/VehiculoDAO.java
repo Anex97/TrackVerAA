@@ -108,4 +108,24 @@ public class VehiculoDAO {
             return false;
         }
     }
+
+    public static int crearVehiculoConUsuario(String marca, String modelo, String placas, int anio, int usuarioId) {
+        String sql = "INSERT INTO vehiculos (marca, modelo, placas, anio, usuario_id) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = ConexionSQLite.conectarVehiculos();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, marca);
+            pstmt.setString(2, modelo);
+            pstmt.setString(3, placas);
+            pstmt.setInt(4, anio);
+            pstmt.setInt(5, usuarioId);
+            int affected = pstmt.executeUpdate();
+            if (affected == 0) return -1;
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.out.println("Error creando vehículo con usuario: " + e.getMessage());
+        }
+        return -1;
+    }
 }

@@ -63,3 +63,69 @@ document.addEventListener('DOMContentLoaded', actualizarDashboard);
 
 // Ejecutar una vez inmediatamente por si el evento ya ocurrió
 actualizarDashboard();
+
+// --- Modal agregar vehículo ---
+function showAddVehModal() {
+  document.getElementById('modalAddVeh').style.display = 'block';
+}
+function hideAddVehModal() {
+  document.getElementById('modalAddVeh').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnAddVeh');
+  if (btn) btn.addEventListener('click', () => { window.location.href = 'vehiculo.html'; });
+  const cancel = document.getElementById('vehCancel');
+  if (cancel) cancel.addEventListener('click', hideAddVehModal);
+  const save = document.getElementById('vehSave');
+  if (save) save.addEventListener('click', async () => {
+    const u = localStorage.getItem('usuario');
+    if (!u) { window.location.href = 'Index.html'; return; }
+    const usuario = JSON.parse(u);
+    const marca = document.getElementById('vehMarca').value.trim();
+    const modelo = document.getElementById('vehModelo').value.trim();
+    const placas = document.getElementById('vehPlacas').value.trim();
+    const anio = document.getElementById('vehAnio').value;
+    if (!marca || !placas || !anio) {
+      alert('Marca, placas y año son requeridos');
+      return;
+    }
+    try {
+      const saveBtn = document.getElementById('vehSave');
+      saveBtn.disabled = true;
+      const fd = new URLSearchParams();
+      fd.append('marca', marca);
+      fd.append('modelo', modelo);
+      fd.append('placas', placas);
+      fd.append('anio', anio);
+      fd.append('usuarioId', String(usuario.id));
+      const resp = await fetch('/api/vehiculos', { method: 'POST', body: fd });
+      const data = await resp.json().catch(() => null);
+      if (resp.ok && data && data.ok) {
+        hideAddVehModal();
+        // limpiar campos
+        document.getElementById('vehMarca').value = '';
+        document.getElementById('vehModelo').value = '';
+        document.getElementById('vehPlacas').value = '';
+        // refrescar dashboard
+        await actualizarDashboard();
+        alert('Vehículo agregado correctamente');
+        saveBtn.disabled = false;
+        return;
+      }
+      // Manejo de errores conocidos
+      if (resp.status === 409 || (data && data.error === 'duplicate_placas')) {
+        alert('Error: las placas ya están registradas. Usa otras placas.');
+      } else if (data && data.message) {
+        alert('Error al agregar vehículo: ' + data.message);
+      } else {
+        alert('Error al agregar vehículo. Intenta nuevamente.');
+      }
+      saveBtn.disabled = false;
+    } catch (e) {
+      console.error(e);
+      alert('Error al agregar vehículo (no se pudo conectar)');
+      const saveBtn = document.getElementById('vehSave'); if (saveBtn) saveBtn.disabled = false;
+    }
+  });
+});

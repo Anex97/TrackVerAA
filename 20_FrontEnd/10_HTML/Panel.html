@@ -56,9 +56,24 @@
 
       <!-- Accesos rápidos -->
       <div class="acciones">
-        <button onclick="location.href='vehiculo.html'">Agregar Vehiculo</button>
+        <button id="btnAddVeh">Agregar Vehiculo</button>
         <button onclick="location.href='registro.html'">Registrar GPS</button>
         <button onclick="location.href='consulta.html'">Consultar Registros</button>
+      </div>
+
+      <!-- Modal agregar vehículo -->
+      <div id="modalAddVeh" class="modal" style="display:none; position:fixed; left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);">
+        <div style="background:#fff; max-width:480px; margin:8% auto; padding:20px; border-radius:6px;">
+          <h3>Agregar Vehículo</h3>
+          <label>Marca<br><input id="vehMarca" type="text"></label><br>
+          <label>Modelo<br><input id="vehModelo" type="text"></label><br>
+          <label>Placas<br><input id="vehPlacas" type="text"></label><br>
+          <label>Año<br><input id="vehAnio" type="number" value="2020"></label><br>
+          <div style="margin-top:12px;">
+            <button id="vehSave">Guardar</button>
+            <button id="vehCancel">Cancelar</button>
+          </div>
+        </div>
       </div>
     </section>
     <!-- Sección de alertas recientes -->

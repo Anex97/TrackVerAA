@@ -10,7 +10,7 @@
   <header>
     <div class="header-container">
       <div class="logo-container">
-        <img src="../20_FrontEnd/img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+        <img src="../img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
       </div>
       <h1 class="titulo">TrackVer A&A</h1>
     </div>
@@ -55,12 +55,55 @@
 
         <button type="submit">Guardar Vehículo</button>
       </form>
+
+      
+    </section>
+    <!-- Tabla de vehículos del usuario (debajo del formulario) -->
+    <section style="max-width:1000px;margin:20px auto; background:white; padding:16px; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.05);">
+      <h3>Mis Vehículos</h3>
+      <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+        <input id="vehFilterText" placeholder="Buscar placas, marca, modelo..." autocomplete="off" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:6px;">
+        <select id="vehFilterYear" style="padding:8px;border:1px solid #ccc;border-radius:6px;">
+          <option value="">Todos los años</option>
+        </select>
+        <button id="vehClearFilters" style="padding:8px 12px;background:#eee;border:1px solid #ccc;border-radius:6px;">Limpiar</button>
+      </div>
+      <div id="vehTableContainer" class="table-container">
+        <table class="table" id="vehiculosTable" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th data-sort="placas" style="text-align:left; padding:8px; border-bottom:1px solid #ddd; cursor:pointer;">Placas</th>
+            <th data-sort="marca" style="text-align:left; padding:8px; border-bottom:1px solid #ddd; cursor:pointer;">Marca</th>
+            <th data-sort="modelo" style="text-align:left; padding:8px; border-bottom:1px solid #ddd; cursor:pointer;">Modelo</th>
+            <th data-sort="anio" style="text-align:left; padding:8px; border-bottom:1px solid #ddd; cursor:pointer;">Año</th>
+            <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="vehiculosTbody">
+          <tr><td colspan="5">Cargando...</td></tr>
+        </tbody>
+        </table>
+      </div>
     </section>
   </main>
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>
 
+  <!-- Delete confirmation modal -->
+  <div id="deleteModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h3>Confirmar eliminación</h3>
+      <p>Vas a eliminar el vehículo: <strong id="deleteModalPlacas"></strong></p>
+      <p>Ingresa tu contraseña para confirmar:</p>
+      <input id="deleteModalPassword" name="delete-password" autocomplete="new-password" type="password" placeholder="Contraseña" style="width:95%;padding:8px;margin-bottom:8px;border:1px solid #ccc;border-radius:6px;">
+      <div id="deleteModalError" style="color:#c00;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="deleteModalCancel" style="padding:8px 12px;background:#eee;border:1px solid #ccc;border-radius:6px;">Cancelar</button>
+        <button id="deleteModalConfirm" style="padding:8px 12px;background:var(--color-primario);color:#fff;border:none;border-radius:6px;">Eliminar</button>
+      </div>
+    </div>
+  </div>
   <script src="../20_JavaScript/vehiculo.js"></script>
 </body>
 </html>

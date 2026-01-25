@@ -96,4 +96,20 @@ public class UsuarioDAO {
             return false;
         }
     }
+
+    // Verificar contraseña por id de usuario
+    public static boolean verificarPasswordPorId(int id, String contrasena) {
+        String sql = "SELECT id FROM usuarios WHERE id = ? AND contrasena = ?";
+        try (Connection conn = ConexionSQLite.conectarUsuarios();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.setString(2, contrasena);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            System.out.println("Error verificando password: " + e.getMessage());
+            return false;
+        }
+    }
 }

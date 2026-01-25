@@ -53,15 +53,13 @@ document.getElementById('registroForm').addEventListener('submit', function(even
     return;
   }
   
-  // Simular guardado (en producción, AJAX)
-  alert('Registro guardado exitosamente.');
-  // Limpiar formulario
-  this.reset();
-  actualizarVistaPrevia();
-  if (marcador) {
-    mapa.removeLayer(marcador);
-    marcador = null;
-  }
+  // En lugar de guardar aquí, redirigir al formulario de vehículo
+  const qs = new URLSearchParams();
+  qs.set('placas', vehiculo);
+  qs.set('lat', lat.toString());
+  qs.set('lon', lon.toString());
+  qs.set('desc', desc);
+  window.location.href = 'vehiculo.html?' + qs.toString();
 });
 
 window.onload = inicializarMapa;
