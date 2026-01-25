@@ -57,6 +57,67 @@ public class Main {
             }
         });
 
+        // API: listar usuarios
+        get("/api/usuarios", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            java.util.List<UsuarioDTO> lista = UsuarioDAO.listarUsuarios();
+            StringBuilder sb = new StringBuilder(); sb.append('[');
+            boolean first = true;
+            for (UsuarioDTO u : lista) {
+                if (!first) sb.append(','); first = false;
+                sb.append(String.format("{\"id\":%d,\"nombre\":\"%s\",\"correo\":\"%s\",\"nivelAcceso\":%d}", u.id, u.nombre == null ? "" : u.nombre.replace("\"","\\\""), u.correo == null ? "" : u.correo.replace("\"","\\\""), u.nivelAcceso));
+            }
+            sb.append(']');
+            return sb.toString();
+        });
+
+        // API: crear usuario (POST)
+        post("/api/usuarios", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String nombre = req.queryParams("nombre");
+            String correo = req.queryParams("correo");
+            String contrasena = req.queryParams("contrasena");
+            String nivelS = req.queryParams("nivelAcceso");
+            if (nombre == null || correo == null || contrasena == null || nivelS == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan campos\"}";
+            }
+            int nivel = Integer.parseInt(nivelS);
+            boolean ok = UsuarioDAO.crearUsuario(nombre, correo, contrasena, nivel);
+            return String.format("{\"ok\":%b}", ok);
+        });
+
+        // API: actualizar usuario (POST)
+        post("/api/usuarios/update", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            String nombre = req.queryParams("nombre");
+            String correo = req.queryParams("correo");
+            String nivelS = req.queryParams("nivelAcceso");
+            String nuevaPass = req.queryParams("nuevaContrasena");
+            if (idS == null || nombre == null || correo == null || nivelS == null) {
+                res.status(400);
+                return "{\"ok\":false,\"message\":\"Faltan campos\"}";
+            }
+            int id = Integer.parseInt(idS);
+            int nivel = Integer.parseInt(nivelS);
+            boolean ok = UsuarioDAO.actualizarUsuario(id, nombre, correo, nivel);
+            if (ok && nuevaPass != null && !nuevaPass.isEmpty()) {
+                UsuarioDAO.actualizarContrasena(id, nuevaPass);
+            }
+            return String.format("{\"ok\":%b}", ok);
+        });
+
+        // API: eliminar usuario (POST)
+        post("/api/usuarios/delete", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String idS = req.queryParams("id");
+            if (idS == null) { res.status(400); return "{\"ok\":false,\"message\":\"id requerido\"}"; }
+            int id = Integer.parseInt(idS);
+            boolean ok = UsuarioDAO.eliminarUsuario(id);
+            return String.format("{\"ok\":%b}", ok);
+        });
+
         // API: conteo de vehiculos (global o por usuarioId)
         get("/api/vehiculos/count", (req, res) -> {
             res.type("application/json; charset=UTF-8");

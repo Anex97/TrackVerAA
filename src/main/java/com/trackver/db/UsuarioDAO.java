@@ -97,6 +97,38 @@ public class UsuarioDAO {
         }
     }
 
+    // Actualizar datos de usuario (nombre, correo, nivelAcceso)
+    public static boolean actualizarUsuario(int id, String nombre, String correo, int nivelAcceso) {
+        String sql = "UPDATE usuarios SET nombre = ?, correo = ?, nivelAcceso = ? WHERE id = ?";
+        try (Connection conn = ConexionSQLite.conectarUsuarios();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nombre);
+            pstmt.setString(2, correo);
+            pstmt.setInt(3, nivelAcceso);
+            pstmt.setInt(4, id);
+            int filas = pstmt.executeUpdate();
+            return filas > 0;
+        } catch (Exception e) {
+            System.out.println("Error actualizando usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Actualizar contraseña de usuario
+    public static boolean actualizarContrasena(int id, String nuevaContrasena) {
+        String sql = "UPDATE usuarios SET contrasena = ? WHERE id = ?";
+        try (Connection conn = ConexionSQLite.conectarUsuarios();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nuevaContrasena);
+            pstmt.setInt(2, id);
+            int filas = pstmt.executeUpdate();
+            return filas > 0;
+        } catch (Exception e) {
+            System.out.println("Error actualizando contraseña: " + e.getMessage());
+            return false;
+        }
+    }
+
     // Verificar contraseña por id de usuario
     public static boolean verificarPasswordPorId(int id, String contrasena) {
         String sql = "SELECT id FROM usuarios WHERE id = ? AND contrasena = ?";

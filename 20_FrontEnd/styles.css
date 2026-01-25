@@ -70,6 +70,7 @@ header {
   margin-top: 10px;
 }
 
+
 .nav-menu li {
   list-style: none;
 }
@@ -506,6 +507,7 @@ body.login-page header { display: block; }
   justify-content: center;
   z-index: 9999;
 }
+.modal[aria-hidden="true"] { display: none; }
 .modal-content {
   width: 420px;
   max-width: calc(100% - 32px);
@@ -598,8 +600,27 @@ body.login-page header { display: block; }
 td .btn-delete-vel, td .action-cell { display: flex; justify-content: center; align-items: center; }
 
 /* Forzar centrado en celdas de acción aunque haya estilos inline */
-td.action-cell { text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; }
+td.action-cell { text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; gap: 6px; }
 td.action-cell .btn-delete-vel { margin: 0 !important; }
+
+/* Ensure any direct children inside action cells are vertically centered */
+td.action-cell > * { align-self: center; }
+/* Small forced height for icon buttons to align visually with table row height */
+td.action-cell .icon-btn, td.action-cell .btn-delete-vel, td.action-cell .icon-dismiss { height: 36px; }
+
+/* Normalize action buttons: flex centering, consistent padding and sizing */
+td.action-cell { vertical-align: middle !important; }
+td.action-cell .icon-btn, td.action-cell .btn-delete-vel, td.action-cell .icon-dismiss {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+}
+td.action-cell img.icon-img { display: block; margin: 0; }
 
 /* Modal form spacing and button styles */
 .modal-content { padding: 22px; }
@@ -615,6 +636,27 @@ td.action-cell .btn-delete-vel { margin: 0 !important; }
 .preview-card h4 { color: var(--color-primario); margin-bottom:8px; }
 .preview-card div { margin-bottom:6px; font-size:0.95rem; }
 .preview-card .small-muted { color:#666; font-size:0.85rem; }
+
+/* Generic card used by admin pages */
+.card { background: white; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); overflow: hidden; }
+.card-header { padding: 12px 16px; border-bottom: 1px solid #edf2f7; background: linear-gradient(90deg, rgba(0,64,128,0.03), rgba(0,64,128,0.01)); }
+.card-header h2, .card-header h3 { margin: 0; color: var(--color-primario); font-family: 'Merriweather', serif; }
+.card-body { padding: 14px 16px; }
+.card .consulta-tabla { margin: 0; }
+.cards-row { display:flex; gap:16px; align-items:flex-start; }
+
+.btn.primary { background: var(--color-primario); color: #fff; border: none; padding: 8px 12px; border-radius:6px; cursor:pointer; }
+.btn { padding: 8px 10px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+.btn.danger { background: #c62828; color:#fff; border:none; }
+
+/* small responsive tweak */
+@media (max-width:900px) { .cards-row { flex-direction: column; } .card { width:100%; } }
+
+/* Slightly smaller, spaced cards for admin page */
+.admin-cards { margin-top: 18px; }
+.admin-cards .card { border-radius: 8px; }
+.admin-cards .card-header { padding: 10px 12px; }
+.admin-cards .card-body { padding: 10px 12px; font-size: 0.95rem; }
 
 @media (max-width: 900px) {
   .cards-row { flex-direction: column; }

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - Usuarios</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="../img/logo.jpg" alt="Logo TrackVer A&A" class="logo">
+      </div>
+      <h1 class="titulo">TrackVer A&A</h1>
+    </div>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="Panel.html">Panel Principal</a></li>
+        <li><a href="Registro.html">Registrar GPS</a></li>
+        <li><a href="Consulta.html">Consultar Registros</a></li>
+        <li><a href="alertas.html">Alertas</a></li>
+        <li><a href="Index.html">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section>
+      <div class="cards-row admin-cards" style="gap:12px;">
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h2 style="margin:0">Usuarios registrados</h2></div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table id="usersTable" class="consulta-tabla" style="width:100%;">
+                <thead>
+                  <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Nivel</th><th>Acciones</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="width:320px;flex:0 0 320px;">
+          <div class="card-header"><h3 style="margin:0">Agregar nuevo usuario</h3></div>
+          <div class="card-body">
+            <form id="newUserForm">
+              <label>Nombre<br><input type="text" name="nombre" id="newNombre" required style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></label>
+              <label style="margin-top:8px;">Correo<br><input type="email" name="correo" id="newCorreo" required style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></label>
+              <label style="margin-top:8px;">Nivel de acceso<br>
+                <select name="nivelAcceso" id="newNivel" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                  <option value="0">0 - Usuario</option>
+                  <option value="1">1 - Auditor</option>
+                  <option value="2">2 - Admin</option>
+                </select>
+              </label>
+              <label style="margin-top:8px;">Contraseña<br><input type="password" name="contrasena" id="newPass" required style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></label>
+              <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+                <button type="reset" class="btn">Limpiar</button>
+                <button type="submit" class="btn primary">Crear</button>
+              </div>
+              <div id="newUserMsg" style="margin-top:8px;min-height:20px;color:#070;" aria-live="polite"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal simple -->
+  <div id="userModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <h3 id="modalTitle">Editar usuario</h3>
+      <form id="userForm">
+        <input type="hidden" name="id" id="userId">
+        <label>Nombre<br><input type="text" id="userNombre" name="nombre" required></label>
+        <label>Correo<br><input type="email" id="userCorreo" name="correo" required></label>
+        <label>Nivel de acceso<br>
+          <select id="userNivel" name="nivelAcceso">
+            <option value="0">0 - Usuario</option>
+            <option value="1">1 - Auditor</option>
+            <option value="2">2 - Admin</option>
+          </select>
+        </label>
+        <label>Contraseña (dejar vacío para no cambiar)<br><input type="password" id="userPass" name="nuevaContrasena"></label>
+        <div style="margin-top:12px;text-align:right;">
+          <button type="button" id="btnCancel" class="btn">Cancelar</button>
+          <button type="submit" class="btn primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../20_JavaScript/admin_users.js"></script>
+  <script src="../20_JavaScript/nav_auth.js"></script>
+</body>
+</html>

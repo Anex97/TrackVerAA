@@ -312,7 +312,7 @@ async function cargarGeocercas() {
     }
     const tbody = document.querySelector('#tableGeocercas tbody');
     if(!tbody) return;
-    if (!Array.isArray(list) || list.length === 0) { tbody.innerHTML = '<tr><td colspan="7">No hay geocercas</td></tr>'; return; }
+    if (!Array.isArray(list) || list.length === 0) { tbody.innerHTML = '<tr><td colspan="7">No hay geocercas asignadas</td></tr>'; return; }
     // Obtener asignaciones y vehículos para mostrar etiqueta de vehículo/placas
     let asigns = [];
     try {
@@ -348,6 +348,12 @@ async function cargarGeocercas() {
     } else {
       // si no hay usuario logueado no mostrar geocercas
       filteredList = [];
+    }
+
+    // If after filtering there are no geocercas to show, render a friendly message
+    if (!Array.isArray(filteredList) || filteredList.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7">No hay geocercas asignadas</td></tr>';
+      return;
     }
 
     tbody.innerHTML = filteredList.map(g => {
@@ -387,16 +393,28 @@ async function cargarGeocercas() {
 
 // cargar y mostrar límites de velocidad configurados
 async function cargarVelocidades() {
-  const usuario = localStorage.getItem('usuario') ? JSON.parse(localStorage.getItem('usuario')).id : null;
+  const stored = localStorage.getItem('usuario');
+  const usuarioObj = stored ? JSON.parse(stored) : null;
+  const usuarioId = usuarioObj ? usuarioObj.id : null;
+  const isAdmin = usuarioObj && Number(usuarioObj.nivelAcceso) === 2;
   try {
     const resp = await fetch('/api/velocidades');
     const tbody = document.querySelector('#tableVelocidades tbody');
     if(!tbody) return;
     if (!resp.ok) { tbody.innerHTML = '<tr><td colspan="3">Error al cargar</td></tr>'; return; }
-    const list = await resp.json();
+    let list = await resp.json();
     if (!Array.isArray(list) || list.length === 0) { tbody.innerHTML = '<tr><td colspan="3">No hay límites asignados</td></tr>'; return; }
-    // obtener lista completa de vehículos (sin filtrar por usuario) para mostrar modelo/placas
-    const vehs = await fetchVehiculos();
+    // If user is not admin, filter speeds to vehicles that belong to the logged user
+    let vehs = [];
+    if (!isAdmin && usuarioId) {
+      vehs = await fetchVehiculos(usuarioId);
+      const owningIds = new Set((vehs || []).map(v => v.id));
+      list = list.filter(it => owningIds.has(it.vehiculo_id));
+    } else {
+      // fetch all vehicles to display labels
+      vehs = await fetchVehiculos();
+    }
+    if (!Array.isArray(list) || list.length === 0) { tbody.innerHTML = '<tr><td colspan="3">No hay límites asignados</td></tr>'; return; }
     const byId = {};
     vehs.forEach(v => byId[v.id] = v);
     tbody.innerHTML = list.map(v => {
