@@ -6,10 +6,27 @@ import com.trackver.db.UsuarioDAO;
 import com.trackver.db.UsuarioDAO.UsuarioDTO;
 
 import static spark.Spark.*;
+import spark.Request;
+import spark.Response;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
+    // Helper that halts the request if the current session is not an admin
+    private static void requireAdmin(Request req) {
+        Object lvl = req.session().attribute("nivelAcceso");
+        if (lvl == null) {
+            halt(401, "{\"ok\":false,\"message\":\"No autenticado\"}");
+        }
+        int nivel = 0;
+        try {
+            if (lvl instanceof Integer) nivel = (Integer) lvl; else nivel = Integer.parseInt(lvl.toString());
+        } catch (Exception e) { nivel = 0; }
+        if (nivel != 2) {
+            halt(403, "{\"ok\":false,\"message\":\"No autorizado\"}");
+        }
+    }
+
     public static void main(String[] args) {
         // Inicializar DB y datos semilla
         InitDB.crearTablaUsuarios();
@@ -19,11 +36,46 @@ public class Main {
         InitDB.crearTablaPosiciones();
         InitDB.crearTablaAlertas();
 
-        SeedDB.insertarUsuarios();
-        SeedDB.insertarAuditorias();
-        SeedDB.insertarPosiciones();
-        SeedDB.insertarVehiculos();
-        SeedDB.insertarAlertas();
+        // Insertar seeds solo si las tablas están vacías (evita duplicados en reinicios)
+        try (java.sql.Connection c = com.trackver.db.ConexionSQLite.conectarUsuarios();
+             java.sql.Statement st = c.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT COUNT(1) AS c FROM usuarios")) {
+            if (!rs.next() || rs.getInt("c") == 0) {
+                SeedDB.insertarUsuarios();
+            }
+        } catch (Exception e) { System.err.println("Error comprobando usuarios seed: " + e.getMessage()); }
+
+        try (java.sql.Connection c = com.trackver.db.ConexionSQLite.conectarAuditorias();
+             java.sql.Statement st = c.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT COUNT(1) AS c FROM auditorias")) {
+            if (!rs.next() || rs.getInt("c") == 0) {
+                SeedDB.insertarAuditorias();
+            }
+        } catch (Exception e) { System.err.println("Error comprobando auditorias seed: " + e.getMessage()); }
+
+        try (java.sql.Connection c = com.trackver.db.ConexionSQLite.conectarPosiciones();
+             java.sql.Statement st = c.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT COUNT(1) AS c FROM posiciones")) {
+            if (!rs.next() || rs.getInt("c") == 0) {
+                SeedDB.insertarPosiciones();
+            }
+        } catch (Exception e) { System.err.println("Error comprobando posiciones seed: " + e.getMessage()); }
+
+        try (java.sql.Connection c = com.trackver.db.ConexionSQLite.conectarVehiculos();
+             java.sql.Statement st = c.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT COUNT(1) AS c FROM vehiculos")) {
+            if (!rs.next() || rs.getInt("c") == 0) {
+                SeedDB.insertarVehiculos();
+            }
+        } catch (Exception e) { System.err.println("Error comprobando vehiculos seed: " + e.getMessage()); }
+
+        try (java.sql.Connection c = com.trackver.db.ConexionSQLite.conectarAlertas();
+             java.sql.Statement st = c.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT COUNT(1) AS c FROM alertas")) {
+            if (!rs.next() || rs.getInt("c") == 0) {
+                SeedDB.insertarAlertas();
+            }
+        } catch (Exception e) { System.err.println("Error comprobando alertas seed: " + e.getMessage()); }
         // Limpieza inicial: desactivar límites de velocidad duplicados dejando el más reciente activo por vehículo
         try (java.sql.Connection conn = com.trackver.db.ConexionSQLite.conectarAlertas();
              java.sql.Statement st = conn.createStatement()) {
@@ -33,7 +85,9 @@ public class Main {
             System.err.println("Error limpiando duplicados de velocidades: " + e.getMessage());
         }
         // Insertar datos aleatorios adicionales para demo (vehículos y posiciones)
-        SeedDB.insertarDatosAleatorios();
+        // Desactivado: evitar que se inserten posiciones nuevas en cada reinicio.
+        // Si necesitas regenerar datos de demo, descomenta la siguiente línea.
+        // SeedDB.insertarDatosAleatorios();
 
         // Configuración del servidor web embebido
         port(4567);
@@ -49,6 +103,10 @@ public class Main {
             UsuarioDTO u = UsuarioDAO.buscarPorCorreoYPass(correo, contrasena);
             res.type("application/json; charset=UTF-8");
             if (u != null) {
+                // Guardar información mínima en la sesión para verificaciones server-side
+                req.session().attribute("usuarioId", u.id);
+                req.session().attribute("usuarioNombre", u.nombre == null ? "" : u.nombre);
+                req.session().attribute("nivelAcceso", u.nivelAcceso);
                 return String.format("{\"ok\":true,\"id\":%d,\"nombre\":\"%s\",\"nivelAcceso\":%d}",
                         u.id, u.nombre.replace("\"", "\\\""), u.nivelAcceso);
             } else {
@@ -56,6 +114,13 @@ public class Main {
                 return "{\"ok\":false}";
             }
         });
+
+        // Protegemos rutas de administración: sólo administradores pueden acceder
+        before("/api/usuarios", (req, res) -> requireAdmin(req));
+        before("/api/usuarios/*", (req, res) -> requireAdmin(req));
+        // Protegemos la página estática si se sirve desde la carpeta estática (ruta relativa)
+        before("/10_HTML/admin_users.html", (req, res) -> requireAdmin(req));
+        before("/admin_users.html", (req, res) -> requireAdmin(req));
 
         // API: listar usuarios
         get("/api/usuarios", (req, res) -> {
