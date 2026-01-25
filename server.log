@@ -1,0 +1,12 @@
+Tabla 'usuarios' lista en usuarios.db
+Tabla 'auditorias' lista en auditorias.db
+Tabla 'posiciones' lista en posiciones.db
+Tabla 'vehiculos' lista en vehiculos.db
+Tabla 'alertas' lista en alertas.db
+Error insertando usuarios iniciales: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: usuarios.correo)
+Auditorías iniciales insertadas en auditorias.db
+Posiciones iniciales insertadas en posiciones.db
+Error insertando vehículos iniciales: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: vehiculos.placas)
+Alertas iniciales insertadas en alertas.db
+Datos aleatorios insertados para usuarios (vehículos y posiciones)
+Servidor web iniciado en http://localhost:4567/ (archivos estáticos: 20_FrontEnd)

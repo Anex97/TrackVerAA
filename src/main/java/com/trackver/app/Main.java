@@ -4,77 +4,125 @@ import com.trackver.db.InitDB;
 import com.trackver.db.SeedDB;
 import com.trackver.db.UsuarioDAO;
 import com.trackver.db.UsuarioDAO.UsuarioDTO;
-import com.trackver.ui.MenuManager;
 
-import java.util.Scanner;
+import static spark.Spark.*;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        // 1) Inicializar BD y usuarios iniciales
+        // Inicializar DB y datos semilla
         InitDB.crearTablaUsuarios();
         InitDB.crearTablaAuditorias();
-        InitDB.crearTablaPosiciones();
+        // Crear vehiculos antes de posiciones para que migraciones que consulten vehiculos funcionen
         InitDB.crearTablaVehiculos();
+        InitDB.crearTablaPosiciones();
         InitDB.crearTablaAlertas();
 
-        // 2) Insertar datos semilla
         SeedDB.insertarUsuarios();
         SeedDB.insertarAuditorias();
         SeedDB.insertarPosiciones();
         SeedDB.insertarVehiculos();
         SeedDB.insertarAlertas();
+        // Insertar datos aleatorios adicionales para demo (vehículos y posiciones)
+        SeedDB.insertarDatosAleatorios();
 
-        // 3) Menú principal
-        boolean salir = false;
+        // Configuración del servidor web embebido
+        port(4567);
 
-        while (!salir) {
-            System.out.println("\n=== MENÚ PRINCIPAL ===");
-            System.out.println("1. Iniciar sesión");
-            System.out.println("2. Salir");
-            System.out.print("Seleccione una opción: ");
-            String opcion = sc.nextLine();
+        // Servir archivos estáticos desde la carpeta del proyecto 20_FrontEnd
+        staticFiles.externalLocation("c:/Repos/TrackVerAA/20_FrontEnd");
 
-            switch (opcion) {
-                case "1": {
-                    // Login con SQLite
-                    System.out.print("Ingrese correo: ");
-                    String correo = sc.nextLine();
-                    System.out.print("Ingrese contraseña: ");
-                    String contrasena = sc.nextLine();
+        // Endpoint POST /api/login - espera form-urlencoded con 'correo' y 'contrasena'
+        post("/api/login", (req, res) -> {
+            String correo = req.queryParams("correo");
+            String contrasena = req.queryParams("contrasena");
 
-                    UsuarioDTO usuarioActivo = UsuarioDAO.buscarPorCorreoYPass(correo, contrasena);
-
-                    if (usuarioActivo != null) {
-                        System.out.println("Bienvenido " + usuarioActivo.nombre +
-                                " | Rol: " + rolTexto(usuarioActivo.nivelAcceso));
-
-                        // Delegar al MenuManager
-                        MenuManager.mostrarMenuPorRol(sc, usuarioActivo);
-                    } else {
-                        System.out.println("Credenciales incorrectas.");
-                    }
-                    break;
-                }
-                case "2":
-                    salir = true;
-                    System.out.println("Saliendo del sistema...");
-                    break;
-                default:
-                    System.out.println("Opción no válida.");
+            UsuarioDTO u = UsuarioDAO.buscarPorCorreoYPass(correo, contrasena);
+            res.type("application/json; charset=UTF-8");
+            if (u != null) {
+                return String.format("{\"ok\":true,\"id\":%d,\"nombre\":\"%s\",\"nivelAcceso\":%d}",
+                        u.id, u.nombre.replace("\"", "\\\""), u.nivelAcceso);
+            } else {
+                res.status(401);
+                return "{\"ok\":false}";
             }
-        }
+        });
 
-        sc.close();
-    }
+        // API: conteo de vehiculos (global o por usuarioId)
+        get("/api/vehiculos/count", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String uid = req.queryParams("usuarioId");
+            int count;
+            if (uid == null) {
+                count = com.trackver.db.VehiculoDAO.listarVehiculos().size();
+            } else {
+                int usuarioId = Integer.parseInt(uid);
+                count = com.trackver.db.VehiculoDAO.contarVehiculosPorUsuario(usuarioId);
+            }
+            return String.format("{\"count\":%d}", count);
+        });
 
-    // Utilidad para mostrar el rol en texto
-    private static String rolTexto(int nivelAcceso) {
-        switch (nivelAcceso) {
-            case 2: return "Administrador";
-            case 1: return "Auditor";
-            default: return "Usuario";
-        }
+        // API: ultima posicion (por usuarioId opcional). Si no se pasa usuarioId devuelve la última global
+        get("/api/posiciones/ultima", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String uid = req.queryParams("usuarioId");
+            java.util.List<com.trackver.db.PosicionDAO.PosicionDTO> lista;
+            if (uid == null) {
+                lista = com.trackver.db.PosicionDAO.listarTodasLasPosiciones();
+            } else {
+                int usuarioId = Integer.parseInt(uid);
+                lista = com.trackver.db.PosicionDAO.listarPosicionesPorUsuario(usuarioId);
+            }
+            if (lista.isEmpty()) {
+                return "{}";
+            }
+                com.trackver.db.PosicionDAO.PosicionDTO p = lista.get(0);
+                // Intentar anexar información del vehículo si está disponible
+                String placas = "";
+                String marca = "";
+                if (p.vehiculoId > 0) {
+                    com.trackver.db.VehiculoDAO.VehiculoDTO v = com.trackver.db.VehiculoDAO.obtenerPorId(p.vehiculoId);
+                    if (v != null) {
+                        placas = v.placas == null ? "" : v.placas.replace("\"", "\\\"");
+                        marca = v.marca == null ? "" : v.marca.replace("\"", "\\\"");
+                    }
+                }
+                return String.format("{\"id\":%d,\"latitud\":%f,\"longitud\":%f,\"fechaHora\":\"%s\",\"usuarioId\":%d,\"vehiculoId\":%d,\"vehiculoPlacas\":\"%s\",\"vehiculoMarca\":\"%s\"}",
+                        p.id, p.latitud, p.longitud, p.fechaHora.replace("\"", "\\\""), p.usuarioId, p.vehiculoId, placas, marca);
+        });
+
+        // API: listar posiciones (usuarioId opcional). Si no se pasa usuarioId devuelve todas las posiciones
+        get("/api/posiciones", (req, res) -> {
+            res.type("application/json; charset=UTF-8");
+            String uid = req.queryParams("usuarioId");
+            java.util.List<com.trackver.db.PosicionDAO.PosicionDTO> lista;
+            if (uid == null) {
+                lista = com.trackver.db.PosicionDAO.listarTodasLasPosiciones();
+            } else {
+                int usuarioId = Integer.parseInt(uid);
+                lista = com.trackver.db.PosicionDAO.listarPosicionesPorUsuario(usuarioId);
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            boolean first = true;
+            for (com.trackver.db.PosicionDAO.PosicionDTO p : lista) {
+                if (!first) sb.append(',');
+                first = false;
+                sb.append(String.format("{\"id\":%d,\"latitud\":%f,\"longitud\":%f,\"fechaHora\":\"%s\",\"usuarioId\":%d,\"vehiculoId\":%d}",
+                    p.id, p.latitud, p.longitud, p.fechaHora.replace("\"", "\\\""), p.usuarioId, p.vehiculoId));
+            }
+            sb.append(']');
+            return sb.toString();
+        });
+
+        // Ruta simple para verificar servidor
+        get("/api/ping", (req, res) -> "pong");
+
+        // Redirigir raíz al HTML de login
+        get("/", (req, res) -> {
+            res.redirect("/10_HTML/Index.html");
+            return null;
+        });
+
+        System.out.println("Servidor web iniciado en http://localhost:4567/ (archivos estáticos: 20_FrontEnd)");
     }
 }
