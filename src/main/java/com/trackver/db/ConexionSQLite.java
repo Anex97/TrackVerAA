@@ -5,19 +5,26 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionSQLite {
+    // Conexión a la base de vehículos
+    private static final String DB_PATH = "50_Databases/";
 
-    // Conexión a la base de usuarios
+    public static Connection conectarVehiculos() throws SQLException {
+        return DriverManager.getConnection("jdbc:sqlite:" + DB_PATH + "vehiculos.db");
+    }
+
+    public static Connection conectarAlertas() throws SQLException {
+        return DriverManager.getConnection("jdbc:sqlite:" + DB_PATH + "alertas.db");
+    }
+
     public static Connection conectarUsuarios() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:usuarios.db");
+        return DriverManager.getConnection("jdbc:sqlite:" + DB_PATH + "usuarios.db");
     }
 
-    // Conexión a la base de auditorías
     public static Connection conectarAuditorias() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:auditorias.db");
+        return DriverManager.getConnection("jdbc:sqlite:" + DB_PATH + "auditorias.db");
     }
 
-    // Conexión a la base de posiciones GPS
     public static Connection conectarPosiciones() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:posiciones.db");
+        return DriverManager.getConnection("jdbc:sqlite:" + DB_PATH + "posiciones.db");
     }
 }

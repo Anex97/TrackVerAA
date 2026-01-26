@@ -42,12 +42,16 @@
         <p><strong>Latitud:</strong> <span id="previewLat">-</span></p>
         <p><strong>Longitud:</strong> <span id="previewLon">-</span></p>
         <p><strong>Descripción:</strong> <span id="previewDesc">-</span></p>
+        <p><strong>Velocidad:</strong> <span id="previewVel">-</span></p>
       </div>
 
       <!-- Formulario de registro -->
       <form class="registro-form" id="registroForm">
-        <label for="vehiculo">Vehículo:</label>
-        <input type="text" id="vehiculo" placeholder="Ej. Volvo TR 430" required>
+        <label for="vehiculoSelect">Vehículo:</label>
+        <select id="vehiculoSelect" required style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+          <option value="">Cargando vehículos...</option>
+        </select>
+        <input type="text" id="vehiculoManual" placeholder="Escribe placas u otra identificación" style="display:none;margin-top:8px;width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
 
         <label for="latitud">Latitud:</label>
         <input type="number" step="any" id="latitud" placeholder="Ej. 25.6866" required>
@@ -57,6 +61,9 @@
 
         <label for="descripcion">Descripción:</label>
         <textarea id="descripcion" placeholder="Detalles del punto" required></textarea>
+
+        <label for="velocidad">Velocidad (km/h) — opcional:</label>
+        <input type="number" step="any" id="velocidad" placeholder="Ej. 60">
 
         <button type="submit">Guardar</button>
       </form>
@@ -76,5 +83,6 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="../20_JavaScript/registro.js"></script>
+  <script src="../20_JavaScript/nav_auth.js"></script>
 </body>
 </html>

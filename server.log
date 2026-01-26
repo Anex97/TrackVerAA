@@ -1,0 +1,11 @@
+Tabla 'usuarios' lista en usuarios.db
+Tabla 'auditorias' lista en auditorias.db
+Tabla 'vehiculos' lista en vehiculos.db
+Tabla 'posiciones' lista en posiciones.db
+Tabla 'alertas' lista en alertas.db
+Tabla 'geocercas' lista en alertas.db
+Tabla 'geocerca_asignaciones' lista en alertas.db
+Tabla 'velocidades_asignadas' lista en alertas.db
+Migración de estado/descripcion completada.
+Servidor web iniciado en http://localhost:4567/ (archivos estáticos: 20_FrontEnd)
+Error creando vehículo con usuario: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: vehiculos.placas)

@@ -70,6 +70,7 @@ header {
   margin-top: 10px;
 }
 
+
 .nav-menu li {
   list-style: none;
 }
@@ -153,6 +154,27 @@ header {
   max-width: 1500px;
   margin: 40px auto;
 }
+
+/* Table container to allow vertical scrolling (used by Consulta.html) */
+.table-container {
+  width: 100%;
+  max-height: 360px; /* visible vertical scroll */
+  overflow: auto;
+}
+
+/* Make table header sticky when scrolling inside .table-container */
+.table-container thead th,
+.consulta-tabla thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-primario);
+  color: white;
+  z-index: 2;
+}
+
+/* Hover & pointer for sortable headers */
+.consulta-tabla thead th[data-sort] { cursor: pointer; color: #fff; opacity: 0.95; }
+.consulta-tabla thead th[data-sort]:hover { text-decoration: underline; opacity: 1; }
 
 /* Caja de la tabla */
 .tabla-contenedor {
@@ -386,6 +408,59 @@ header {
   background-color: var(--color-secundario);
 }
 
+/* Animated login card styles */
+.animated-login { display:flex; align-items:center; justify-content:center; padding:40px 0; }
+.login-card { width:360px; background:linear-gradient(180deg,#ffffffcc, #fbfdff); border-radius:12px; box-shadow:0 20px 40px rgba(2,20,40,0.12); padding:24px; position:relative; overflow:hidden; }
+.login-brand { display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:12px; }
+.logo-sm { width:56px; height:56px; border-radius:10px; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+.login-card h2 { margin:0; color:var(--color-primario); font-size:1.15rem; }
+.login-card .field { position:relative; margin:24px 0; }
+.login-card .field input { width:90%; padding:30px 12px; border-radius:8px; border:1px solid #d7dfe7; background:transparent; outline:none; transition:box-shadow .18s, border-color .18s; }
+.login-card .field label { position:absolute; left:12px; top:5px; color:#6b7380; font-size:0.98rem; pointer-events:none; transition:transform .18s, font-size .18s, top .18s; }
+.login-card .field input:focus { box-shadow:0 6px 18px rgba(12,60,120,0.06); border-color:var(--color-primario); }
+.login-card .field input:focus + label,
+.login-card .field input.filled + label,
+.login-card .field input:not(:placeholder-shown) + label { transform:translateY(-14px); font-size:0.78rem; top:2px; }
+.btn-login { position:relative; overflow:hidden; display:inline-block; width:100%; padding:12px 14px; border-radius:8px; border:none; background:linear-gradient(90deg,var(--color-primario), var(--color-secundario)); color:#fff; font-weight:700; cursor:pointer; }
+.btn-login .btn-text { position:relative; z-index:2; }
+.btn-login .btn-shimmer { position:absolute; top:0; left:-40%; width:40%; height:100%; background:linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.25), rgba(255,255,255,0.05)); transform:skewX(-18deg); transition:transform .8s ease; z-index:1; }
+.btn-login:hover .btn-shimmer { left:100%; transform:skewX(-18deg) translateX(0); }
+
+/* subtle entrance animation */
+@keyframes cardEnter { from { transform:translateY(10px) scale(0.995); opacity:0 } to { transform:none; opacity:1 } }
+.login-card { animation: cardEnter .42s cubic-bezier(.2,.9,.2,1) both; }
+
+/* shake on error */
+@keyframes shake { 0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)} }
+.login-card.shake { animation: shake .5s ease; }
+
+/* small responsive tweak */
+@media (max-width:420px) { .login-card { width:92%; padding:18px; } .logo-sm{width:48px;height:48px} }
+
+/* Login page specific adjustments to match provided design */
+/* Header is visible on login page; remove hiding rule to restore header */
+body.login-page header { display: block; }
+/* subtle top highlight bar inside card (like screenshot) */
+.login-card::before { content: ''; position: absolute; left: 0; right: 0; height: 80px; top: 0; background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(250,250,250,0.75)); border-bottom: 1px solid rgba(0,0,0,0.03); transform: translateY(-12px); }
+.login-card { padding-top: 120px; }
+
+/* input visual to match screenshot: pale blue background, no inner border, larger radius */
+.login-card .field input { background: #eaf4ff; border: none; padding:22px 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.6); }
+.login-card .field label { left:18px; top:34px; color:#55708a; }
+.login-card .field input.filled + label,
+.login-card .field input:focus + label { transform:translateY(-22px); font-size:0.78rem; top:6px; }
+
+/* center brand and reduce gap for compact look */
+.login-brand { flex-direction:column; gap:6px; }
+.login-card h2 { font-size:1rem; color:#094a82; }
+
+/* stronger button visual like screenshot */
+.btn-login { box-shadow: 0 6px 18px rgba(3,78,148,0.14); }
+
+/* make login-extra smaller and centered */
+.login-card .login-extra { text-align:center; margin-top:12px; font-size:0.9rem; color:#3b556f; }
+
+
 .login-extra {
   margin-top: 15px;
   font-size: 0.9rem;
@@ -400,6 +475,12 @@ header {
   text-decoration: underline;
 }
 
+/* Login messages */
+.login-message { margin-top:12px; min-height:28px; font-size:0.95rem; text-align:center; transition:opacity .18s; opacity:0; }
+.login-message.visible { opacity:1; }
+.login-message.success { color: #0b6623; background: rgba(46,125,50,0.06); padding:8px 12px; border-radius:6px; border:1px solid rgba(46,125,50,0.12); }
+.login-message.error { color: #7a0b0b; background: rgba(198,63,63,0.06); padding:8px 12px; border-radius:6px; border:1px solid rgba(198,63,63,0.12); }
+
 /* ==============================
    Footer
    ============================== */
@@ -412,3 +493,185 @@ header {
   font-size: 0.9rem;
   margin-top: 40px;
 }
+
+/* Modal for delete confirmation */
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal[aria-hidden="true"] { display: none; }
+.modal-content {
+  width: 420px;
+  max-width: calc(100% - 32px);
+  background: white;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.modal-content h3 { margin-top: 0; color: var(--color-primario); }
+
+/* Botón de eliminar en tablas (centrado y estilo) */
+.btn-delete-vel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 30px;
+  padding: 0;
+  border-radius: 6px;
+  background: var(--color-alerta);
+  color: white;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.btn-delete-vel:hover { background: #990000; }
+
+/* Icon button used for marcar correo/sms */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  padding: 4px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-primario);
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+.icon-btn:hover { background: rgba(0,0,0,0.04); }
+.icon-btn.loading { opacity: 0.6; }
+.icon-btn.done { background: rgba(46,125,50,0.12); border-color: rgba(46,125,50,0.25); color: #2e7d32; }
+.icon-btn svg { display: block; }
+
+/* Slight spacing between icon buttons and dismiss */
+.action-cell .icon-btn { margin: 0 6px; }
+
+/* Icon dismiss (small red X) */
+.icon-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  padding: 0;
+  border-radius: 6px;
+  background: var(--color-alerta);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.icon-dismiss:hover { background: #990000; }
+.icon-dismiss:disabled { opacity: 0.6; cursor: default; }
+
+/* Ensure icon buttons inside .alertas (Panel) are not styled by generic .alertas button rules */
+.alertas .icon-btn {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.06);
+  color: var(--color-primario);
+  box-shadow: none;
+}
+
+/* Ensure explicit override for hover when inside alertas */
+.alertas .icon-btn:hover { background: rgba(0,0,0,0.04); }
+
+/* Make the icon buttons visually stand out (light background) so SVG shows clearly */
+.alertas .icon-btn { background: #ffffff; border-radius:6px; }
+.alertas .icon-btn:hover { background: #fbfbfb; }
+
+/* Image inside icon button */
+.icon-img { width: 18px; height: 18px; display: block; }
+.alertas .icon-btn .icon-img { width: 20px; height: 20px; }
+
+/* Asegurar que la celda de acciones centre su contenido */
+td .btn-delete-vel, td .action-cell { display: flex; justify-content: center; align-items: center; }
+
+/* Forzar centrado en celdas de acción aunque haya estilos inline */
+td.action-cell { text-align: center !important; display: flex !important; justify-content: center !important; align-items: center !important; gap: 6px; }
+td.action-cell .btn-delete-vel { margin: 0 !important; }
+
+/* Ensure any direct children inside action cells are vertically centered */
+td.action-cell > * { align-self: center; }
+/* Small forced height for icon buttons to align visually with table row height */
+td.action-cell .icon-btn, td.action-cell .btn-delete-vel, td.action-cell .icon-dismiss { height: 36px; }
+
+/* Normalize action buttons: flex centering, consistent padding and sizing */
+td.action-cell { vertical-align: middle !important; }
+td.action-cell .icon-btn, td.action-cell .btn-delete-vel, td.action-cell .icon-dismiss {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+}
+td.action-cell img.icon-img { display: block; margin: 0; }
+
+/* Modal form spacing and button styles */
+.modal-content { padding: 22px; }
+.modal-content .modal-form { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.modal-content .modal-form input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+.modal-content .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.btn-confirm { background: var(--color-primario); color: #fff; border: none; padding: 8px 12px; border-radius:6px; cursor:pointer; }
+.btn-confirm:hover { background: var(--color-secundario); }
+.btn-cancel { background: #f0f0f0; color:#333; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+
+/* Preview card for geocerca */
+.preview-card { background: white; padding: 12px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+.preview-card h4 { color: var(--color-primario); margin-bottom:8px; }
+.preview-card div { margin-bottom:6px; font-size:0.95rem; }
+.preview-card .small-muted { color:#666; font-size:0.85rem; }
+
+/* Generic card used by admin pages */
+.card { background: white; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); overflow: hidden; }
+.card-header { padding: 12px 16px; border-bottom: 1px solid #edf2f7; background: linear-gradient(90deg, rgba(0,64,128,0.03), rgba(0,64,128,0.01)); }
+.card-header h2, .card-header h3 { margin: 0; color: var(--color-primario); font-family: 'Merriweather', serif; }
+.card-body { padding: 14px 16px; }
+.card .consulta-tabla { margin: 0; }
+.cards-row { display:flex; gap:16px; align-items:flex-start; }
+
+.btn.primary { background: var(--color-primario); color: #fff; border: none; padding: 8px 12px; border-radius:6px; cursor:pointer; }
+.btn { padding: 8px 10px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+.btn.danger { background: #c62828; color:#fff; border:none; }
+
+/* small responsive tweak */
+@media (max-width:900px) { .cards-row { flex-direction: column; } .card { width:100%; } }
+
+/* Slightly smaller, spaced cards for admin page */
+.admin-cards { margin-top: 18px; }
+.admin-cards .card { border-radius: 8px; }
+.admin-cards .card-header { padding: 10px 12px; }
+.admin-cards .card-body { padding: 10px 12px; font-size: 0.95rem; }
+
+@media (max-width: 900px) {
+  .cards-row { flex-direction: column; }
+  .preview-card { width:100% !important; order:2; }
+  form#alertForm { order:1; width:100%; }
+}
+
+/* Leaflet map container tweaks inside preview card */
+.preview-card .leaflet-container { border-radius:6px; height:180px; }
+
+/* Recent alerts styles for Panel */
+.alertas .alerta-lista { list-style:none; padding-left:0; margin:0; }
+.alertas .alerta-lista li { border-left:4px solid transparent; padding:8px 12px; margin-bottom:8px; background:#fff; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.alerta-triggered { border-left-color:#d32f2f; }
+.alerta-item em { color:#666; margin-left:8px; font-style:normal; font-size:0.85rem; }
+
+/* Scrollable table wrapper for Panel alerts */
+.table-scroll { max-height: 360px; overflow: auto; }

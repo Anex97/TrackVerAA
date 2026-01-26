@@ -4,6 +4,46 @@
   <meta charset="UTF-8">
   <title>TrackVer A&A - Alertas</title>
   <link rel="stylesheet" href="../styles.css">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* Small local styles to improve form appearance */
+    .alert-card { background: #fff; padding:12px 16px 16px 16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.06); position:relative; }
+    /* Cards used to display full tables should have consistent height */
+    .table-card { display:flex; flex-direction:column; height:360px; }
+    .table-card .table-wrap { overflow:auto; flex:1 1 auto; }
+    .consulta-tabla { width:100%; border-collapse:collapse; }
+    .consulta-tabla th, .consulta-tabla td { border-bottom:1px solid #e6eef8; padding:8px; text-align:left; }
+    .consulta-tabla th.sortable { cursor:pointer; position:relative; }
+    .consulta-tabla th.sortable::after { content:'\25B2'; font-size:10px; opacity:0.0; margin-left:6px; transition:opacity .15s, transform .15s; }
+    .consulta-tabla th.sortable.sorted-asc::after { opacity:0.9; transform:rotate(0deg); }
+    .consulta-tabla th.sortable.sorted-desc::after { opacity:0.9; transform:rotate(180deg); }
+    .alert-card label { display:block; font-size:0.9rem; color:#333; margin-top:8px; }
+    .alert-card input, .alert-card select { width:100%; padding:8px 10px; margin-top:4px; box-sizing:border-box; border:1px solid #ccc; border-radius:4px; }
+      /* Layout for two separate cards: left (controls) + right (form) */
+      .cards-row { display:flex; gap:16px; margin-bottom:16px; }
+        .left-card { flex:0 0 260px; }
+      .right-card { flex:1 1 0; }
+      .tipo-alerta-float { display:flex; flex-direction:column; gap:8px; align-items:flex-start; width:100%; }
+      .tipo-alerta-float select, .tipo-alerta-float button { width:100%; box-sizing:border-box; }
+      /* Ensure form inputs/labels are full-width inside their container */
+      #alertForm input, #alertForm select, #alertForm textarea { width:100%; }
+      #alertForm label { display:block; width:100%; margin-top:8px; }
+    #alertForm { display:flex; gap:12px; align-items:end; flex-wrap:wrap; }
+    #alertForm .small { flex:0 0 120px; }
+    #alertForm .large { flex:1 1 320px; }
+    .consulta-tabla th { background:#0b5a9a; color:#fff; padding:8px; }
+    /* Delete button style (compact red X) */
+    .btn-delete-vel { padding:4px 8px; border-radius:4px; border:none; background:#c62828; color:#fff; cursor:pointer; font-weight:700; font-size:14px; line-height:1; }
+    .btn-delete-vel:hover { background:#b71c1c; }
+    /* When used together with icon-dismiss, render as compact icon button */
+    .btn-delete-vel.icon-dismiss { padding:0; width:36px; height:34px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px; font-size:18px; }
+    .btn-delete-vel.icon-dismiss:hover { background:#b71c1c; }
+    /* Floating alert-type combobox (positioned inside the section) */
+    .tipo-alerta-float label { display:block; font-size:0.85rem; color:#333; margin-bottom:4px; }
+    .tipo-alerta-float select { padding:6px 8px; border:1px solid #ccc; border-radius:4px; }
+    .tipo-alerta-float button { padding:6px 8px; border-radius:4px; border:none; background:#0b5a9a; color:#fff; cursor:pointer; }
+  </style>
 </head>
 <body>
   <!-- Sección del encabezado con logo, título y navegación -->
@@ -31,59 +71,86 @@
 
   <!-- Área de contenido principal -->
   <main>
-    <!-- Sección de historial de alertas -->
-    <section class="alertas">
-      <h2>Historial de Alertas</h2>
+    <section style="max-width:1600px;margin:16px auto;padding:12px;">
+      <h2 style="margin-bottom:10px;">Alertas — Configuración</h2>
 
-      <!-- Controles de filtrado -->
-      <div class="filtros">
-        <input type="text" id="filtroVehiculo" placeholder="Buscar por vehículo">
-        <input type="text" id="filtroTipo" placeholder="Buscar por tipo de alerta">
-        <input type="date" id="fechaInicio">
-        <input type="date" id="fechaFin">
-        <button type="button" onclick="filtrarAlertas()">Filtrar</button>
-        <button type="button" onclick="mostrarTodas()">Mostrar todas</button>
+      <!-- Two cards: left controls, right form -->
+      <div class="cards-row">
+        <div class="alert-card left-card">
+          <div class="tipo-alerta-float">
+            <label for="tipoAlerta">Tipo de Alerta</label>
+            <select id="tipoAlerta">
+              <option value="geocerca">Geocerca</option>
+              <option value="velocidad">Velocidad</option>
+            </select>
+            <button type="submit" id="btnAlertSubmit" form="alertForm">Guardar</button>
+          </div>
+        </div>
+        <div class="alert-card right-card">
+          <!-- Un único formulario que se adapta según tipo seleccionado + preview -->
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <form id="alertForm" style="flex:1 1 480px;">
+              <div class="large" id="formFields">
+                <div id="fieldsContainer"></div>
+              </div>
+            </form>
+            <div class="preview-card" style="width:320px;flex:0 0 320px;">
+              <h4 style="margin-top:0;">Preview Geocerca</h4>
+              <div><strong>Nombre:</strong> <span id="previewGcNombre">-</span></div>
+              <div><strong>Latitud:</strong> <span id="previewGcLat">-</span></div>
+              <div><strong>Longitud:</strong> <span id="previewGcLon">-</span></div>
+              <div><strong>Radio (m):</strong> <span id="previewGcRadio">-</span></div>
+              <div><strong>Vehículo:</strong> <span id="previewGcVeh">-</span></div>
+              <div style="margin-top:8px;border:1px solid #ddd;border-radius:6px;overflow:hidden;">
+                <div id="gcPreviewMap" style="width:100%;height:180px;border:0;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Tabla de alertas -->
-      <table class="consulta-tabla">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Vehículo</th>
-            <th>Tipo de Alerta</th>
-            <th>Descripción</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Ejemplo de datos estáticos -->
-          <tr>
-            <td>1</td>
-            <td>Volvo TR 430</td>
-            <td>Velocidad</td>
-            <td>Exceso de velocidad detectado</td>
-            <td>14/12/2025 11:45</td>
-            <td>Pendiente</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Volvo TR 500</td>
-            <td>Zona restringida</td>
-            <td>Entrada a zona no autorizada</td>
-            <td>14/12/2025 10:30</td>
-            <td>Atendida</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Tablas lado a lado: geocercas (izquierda) | límites de velocidad (derecha) -->
+      <div style="display:flex;gap:16px;">
+        <div style="flex:1;min-width:300px;">
+          <div class="alert-card table-card">
+            <h3 style="margin-top:0;">Geocercas configuradas</h3>
+            <div class="table-wrap">
+              <table class="consulta-tabla" id="tableGeocercas">
+                <thead>
+                  <tr><th class="sortable">ID</th><th class="sortable">Nombre</th><th class="sortable">Latitud</th><th class="sortable">Longitud</th><th class="sortable">Radio(m)</th><th>Vehículo(s)</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="7">Cargando geocercas...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1;min-width:300px;">
+          
+
+          <div class="alert-card table-card">
+            <h3 style="margin-top:0;">Límites de velocidad configurados</h3>
+            <div class="table-wrap">
+              <table class="consulta-tabla" id="tableVelocidades">
+                <thead>
+                  <tr><th class="sortable">ID</th><th class="sortable">Vehículo (Modelo - Placas)</th><th class="sortable">Vel. máx (km/h)</th><th>Acciones</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
-  <!-- Sección del pie de página -->
   <footer class="footer">
     <p>© 2025 TrackVer A&A. Todos los derechos reservados.</p>
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="../20_JavaScript/alertas.js"></script>
+  <script src="../20_JavaScript/nav_auth.js"></script>
 </body>
 </html>

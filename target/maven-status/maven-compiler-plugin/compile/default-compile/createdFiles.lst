@@ -1,7 +1,7 @@
-com\trackver\model\Administrador.class
 com\trackver\app\Main.class
 com\trackver\model\Auditor.class
 com\trackver\auth\SistemaAutenticacion.class
 com\trackver\model\ReportePreliminar.class
 com\trackver\model\Auditoria.class
+com\trackver\model\Administrador.class
 com\trackver\model\Usuario.class

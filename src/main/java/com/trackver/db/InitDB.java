@@ -2,8 +2,125 @@ package com.trackver.db;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 
 public class InitDB {
+    // =========================
+    // TABLA VEHICULOS (vehiculos.db)
+    // =========================
+    public static void crearTablaVehiculos() {
+        String sql = "CREATE TABLE IF NOT EXISTS vehiculos (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "marca TEXT NOT NULL," +
+                     "modelo TEXT NOT NULL," +
+                     "placas TEXT UNIQUE NOT NULL," +
+                     "anio INTEGER NOT NULL," +
+                     "usuario_id INTEGER)"; // referencia al usuario dueño (opcional)
+        try (Connection conn = ConexionSQLite.conectarVehiculos();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'vehiculos' lista en vehiculos.db");
+            // Asegurar columna usuario_id en esquemas antiguos
+            try (ResultSet rs = stmt.executeQuery("PRAGMA table_info('vehiculos')")) {
+                boolean tieneUsuarioId = false;
+                while (rs.next()) {
+                    String colName = rs.getString("name");
+                    if ("usuario_id".equalsIgnoreCase(colName)) {
+                        tieneUsuarioId = true;
+                        break;
+                    }
+                }
+                if (!tieneUsuarioId) {
+                    try (Statement s2 = conn.createStatement()) {
+                        s2.execute("ALTER TABLE vehiculos ADD COLUMN usuario_id INTEGER");
+                        System.out.println("Columna 'usuario_id' añadida a tabla vehiculos");
+                    } catch (Exception ex) {
+                        System.out.println("No se pudo añadir columna usuario_id: " + ex.getMessage());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error creando tabla vehiculos: " + e.getMessage());
+        }
+    }
+
+    // =========================
+    // TABLA ALERTAS (alertas.db)
+    // =========================
+    public static void crearTablaAlertas() {
+        String sql = "CREATE TABLE IF NOT EXISTS alertas (" +
+                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                     "vehiculo_id INTEGER NOT NULL," +
+                     "tipo TEXT NOT NULL," +
+                     "descripcion TEXT," +
+                     "fecha TEXT NOT NULL," +
+                     "estado TEXT NOT NULL)";
+        try (Connection conn = ConexionSQLite.conectarAlertas();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'alertas' lista en alertas.db");
+            // Tablas adicionales para geocercas y límites de velocidad
+            try {
+                stmt.execute("CREATE TABLE IF NOT EXISTS geocercas (" +
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             "nombre TEXT, " +
+                             "usuario_id INTEGER, " +
+                             "latitud REAL, " +
+                             "longitud REAL, " +
+                             "radio_m REAL, " +
+                             "activo INTEGER DEFAULT 1)");
+                System.out.println("Tabla 'geocercas' lista en alertas.db");
+            } catch (Exception ex) {
+                System.out.println("No se pudo crear tabla geocercas: " + ex.getMessage());
+            }
+            try {
+                stmt.execute("CREATE TABLE IF NOT EXISTS geocerca_asignaciones (" +
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             "geocerca_id INTEGER, " +
+                             "vehiculo_id INTEGER)");
+                System.out.println("Tabla 'geocerca_asignaciones' lista en alertas.db");
+            } catch (Exception ex) {
+                System.out.println("No se pudo crear tabla geocerca_asignaciones: " + ex.getMessage());
+            }
+            try {
+                stmt.execute("CREATE TABLE IF NOT EXISTS velocidades_asignadas (" +
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             "vehiculo_id INTEGER, " +
+                             "vel_max_kmh REAL, " +
+                             "activo INTEGER DEFAULT 1)");
+                System.out.println("Tabla 'velocidades_asignadas' lista en alertas.db");
+            } catch (Exception ex) {
+                System.out.println("No se pudo crear tabla velocidades_asignadas: " + ex.getMessage());
+            }
+            // Asegurar columnas correo_enviado y sms_enviado en tabla alertas (migración de esquema)
+            try (ResultSet rsCols = stmt.executeQuery("PRAGMA table_info('alertas')")) {
+                boolean tieneCorreo = false;
+                boolean tieneSms = false;
+                while (rsCols.next()) {
+                    String col = rsCols.getString("name");
+                    if ("correo_enviado".equalsIgnoreCase(col)) tieneCorreo = true;
+                    if ("sms_enviado".equalsIgnoreCase(col)) tieneSms = true;
+                }
+                if (!tieneCorreo) {
+                    try (Statement s2 = conn.createStatement()) {
+                        s2.execute("ALTER TABLE alertas ADD COLUMN correo_enviado INTEGER DEFAULT 0");
+                        System.out.println("Columna 'correo_enviado' añadida a tabla alertas");
+                    } catch (Exception ex) { System.out.println("No se pudo añadir columna correo_enviado: " + ex.getMessage()); }
+                }
+                if (!tieneSms) {
+                    try (Statement s3 = conn.createStatement()) {
+                        s3.execute("ALTER TABLE alertas ADD COLUMN sms_enviado INTEGER DEFAULT 0");
+                        System.out.println("Columna 'sms_enviado' añadida a tabla alertas");
+                    } catch (Exception ex) { System.out.println("No se pudo añadir columna sms_enviado: " + ex.getMessage()); }
+                }
+            } catch (Exception ex) {
+                System.out.println("Error comprobando columnas alertas: " + ex.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error creando tabla alertas: " + e.getMessage());
+        }
+    }
 
     // =========================
     // TABLA USUARIOS (usuarios.db)
@@ -49,15 +166,129 @@ public class InitDB {
     // =========================
     public static void crearTablaPosiciones() {
         String sql = "CREATE TABLE IF NOT EXISTS posiciones (" +
-                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                     "latitud REAL NOT NULL," +
-                     "longitud REAL NOT NULL," +
-                     "fechaHora TEXT NOT NULL," +
-                     "usuario_id INTEGER)"; // referencia lógica al usuario dueño de la posición
+                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                 "latitud REAL NOT NULL," +
+                 "longitud REAL NOT NULL," +
+                 "fechaHora TEXT NOT NULL," +
+                 "usuario_id INTEGER," +
+                 "vehiculo_id INTEGER," +
+                 "descripcion TEXT," +
+                 "estado TEXT)"; // ahora con referencia al vehículo, descripción y estado
         try (Connection conn = ConexionSQLite.conectarPosiciones();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("Tabla 'posiciones' lista en posiciones.db");
+            // Asegurar columna vehiculo_id en esquemas antiguos y migrar cuando sea posible
+            try (ResultSet rs = stmt.executeQuery("PRAGMA table_info('posiciones')")) {
+                boolean tieneVeh = false;
+                while (rs.next()) {
+                    String colName = rs.getString("name");
+                    if ("vehiculo_id".equalsIgnoreCase(colName)) {
+                        tieneVeh = true;
+                        break;
+                    }
+                }
+                if (!tieneVeh) {
+                    try (Statement s2 = conn.createStatement()) {
+                        s2.execute("ALTER TABLE posiciones ADD COLUMN vehiculo_id INTEGER");
+                        System.out.println("Columna 'vehiculo_id' añadida a tabla posiciones");
+                    } catch (Exception ex) {
+                        System.out.println("No se pudo añadir columna vehiculo_id: " + ex.getMessage());
+                    }
+                }
+
+                    // Asegurar columna descripcion
+                try (ResultSet rs2 = stmt.executeQuery("PRAGMA table_info('posiciones')")) {
+                    boolean tieneDesc = false;
+                    while (rs2.next()) {
+                        String col = rs2.getString("name");
+                        if ("descripcion".equalsIgnoreCase(col)) { tieneDesc = true; break; }
+                    }
+                    if (!tieneDesc) {
+                        try (Statement s3 = conn.createStatement()) {
+                            s3.execute("ALTER TABLE posiciones ADD COLUMN descripcion TEXT");
+                            System.out.println("Columna 'descripcion' añadida a tabla posiciones");
+                        } catch (Exception ex) {
+                            System.out.println("No se pudo añadir columna descripcion: " + ex.getMessage());
+                        }
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Error comprobando columna descripcion: " + ex.getMessage());
+                }
+
+                    // Asegurar columna estado
+                    try (ResultSet rs3 = stmt.executeQuery("PRAGMA table_info('posiciones')")) {
+                        boolean tieneEstado = false;
+                        while (rs3.next()) {
+                            String col = rs3.getString("name");
+                            if ("estado".equalsIgnoreCase(col)) { tieneEstado = true; break; }
+                        }
+                        if (!tieneEstado) {
+                            try (Statement s4 = conn.createStatement()) {
+                                s4.execute("ALTER TABLE posiciones ADD COLUMN estado TEXT");
+                                System.out.println("Columna 'estado' añadida a tabla posiciones");
+                            } catch (Exception ex) {
+                                System.out.println("No se pudo añadir columna estado: " + ex.getMessage());
+                            }
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Error comprobando columna estado: " + ex.getMessage());
+                    }
+                    // Asegurar columna velocidad (km/h)
+                    try (ResultSet rs4 = stmt.executeQuery("PRAGMA table_info('posiciones')")) {
+                        boolean tieneVel = false;
+                        while (rs4.next()) {
+                            String col = rs4.getString("name");
+                            if ("velocidad".equalsIgnoreCase(col)) { tieneVel = true; break; }
+                        }
+                        if (!tieneVel) {
+                            try (Statement s5 = conn.createStatement()) {
+                                s5.execute("ALTER TABLE posiciones ADD COLUMN velocidad REAL");
+                                System.out.println("Columna 'velocidad' añadida a tabla posiciones");
+                            } catch (Exception ex) {
+                                System.out.println("No se pudo añadir columna velocidad: " + ex.getMessage());
+                            }
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Error comprobando columna velocidad: " + ex.getMessage());
+                    }
+            }
+
+            // Migración simple: para posiciones existentes con usuario_id, intentar enlazar al primer vehículo del usuario
+            try (PreparedStatement psSelect = conn.prepareStatement("SELECT id, usuario_id FROM posiciones WHERE vehiculo_id IS NULL");
+                 Connection connVeh = ConexionSQLite.conectarVehiculos();
+                 PreparedStatement psFindVeh = connVeh.prepareStatement("SELECT id FROM vehiculos WHERE usuario_id = ? LIMIT 1");
+                 PreparedStatement psUpdate = conn.prepareStatement("UPDATE posiciones SET vehiculo_id = ? WHERE id = ?")) {
+                try (ResultSet rpos = psSelect.executeQuery()) {
+                    while (rpos.next()) {
+                        int posId = rpos.getInt("id");
+                        int usuarioId = rpos.getInt("usuario_id");
+                        psFindVeh.setInt(1, usuarioId);
+                        try (ResultSet rv = psFindVeh.executeQuery()) {
+                            if (rv.next()) {
+                                int vehId = rv.getInt("id");
+                                psUpdate.setInt(1, vehId);
+                                psUpdate.setInt(2, posId);
+                                psUpdate.executeUpdate();
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                System.out.println("Error en migración posiciones->vehiculo: " + ex.getMessage());
+            }
+            // Backfill de estado y descripcion para posiciones existentes (ejecutar en background para no bloquear arranque)
+            try {
+                new Thread(() -> {
+                    try {
+                        com.trackver.db.PosicionDAO.migrarEstadoYDescripcion();
+                    } catch (Exception ex) {
+                        System.out.println("Error en hilo de migración estado/descripcion: " + ex.getMessage());
+                    }
+                }, "migracion-estado-descripcion").start();
+            } catch (Exception ex) {
+                System.out.println("No se pudo iniciar hilo de migración estado/descripcion: " + ex.getMessage());
+            }
         } catch (Exception e) {
             System.out.println("Error creando tabla posiciones: " + e.getMessage());
         }
